@@ -9,6 +9,7 @@ import (
 	"strconv"
 
 	"github.com/antonmashko/envconf"
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
@@ -147,7 +148,7 @@ func convertData(res *PrometheusResponse, conf MyEvent) (*RestoRequest, error) {
 	}, nil
 }
 
-func HandleRequest(ctx context.Context, conf MyEvent) (*RestoResponse, error) {
+func fetchData(conf MyEvent) (*RestoResponse, error) {
 	rawData, err := getPrometheusRawData(conf)
 	if err != nil {
 		return nil, err
@@ -161,6 +162,29 @@ func HandleRequest(ctx context.Context, conf MyEvent) (*RestoResponse, error) {
 		return nil, err
 	}
 	return restoResp, err
+}
+
+func HandleRequest(ctx context.Context, body events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
+	var conf MyEvent
+	if err := json.Unmarshal([]byte(body.Body), &conf); err != nil {
+		return response(http.StatusBadRequest, err.Error()), nil
+	}
+	data, err := fetchData(conf)
+	if err != nil {
+		return response(http.StatusInternalServerError, err.Error()), nil
+	}
+	b, err := json.Marshal(data)
+	if err != nil {
+		return response(http.StatusInternalServerError, err.Error()), nil
+	}
+	return response(http.StatusOK, string(b)), nil
+}
+
+func response(code int, body string) *events.APIGatewayProxyResponse {
+	return &events.APIGatewayProxyResponse{
+		StatusCode: code,
+		Body:       body,
+	}
 }
 
 func main() {

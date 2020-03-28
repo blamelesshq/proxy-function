@@ -1,4 +1,4 @@
-exec=lambda-prometheus
+exec=lambda
 init: build run
 
 build:
