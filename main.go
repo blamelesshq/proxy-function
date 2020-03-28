@@ -120,23 +120,23 @@ func sendDataToResto(data *RestoRequest) (*RestoResponse, error) {
 
 func convertData(res *PrometheusResponse, conf MyEvent) (*RestoRequest, error) {
 	if len(res.Data.Result) == 0 {
-		return nil, fmt.Errorf("we got empty result")
+		return nil, fmt.Errorf("we got empty result from Prometheus")
 	}
 	r := res.Data.Result[0]
 	if len(r.Values) == 0 {
-		return nil, fmt.Errorf("we got empty values")
+		return nil, fmt.Errorf("we got empty values from Prometheus")
 	}
 	lastData := r.Values[0]
 	if len(lastData) != 2 {
-		return nil, fmt.Errorf("invalid data format")
+		return nil, fmt.Errorf("invalid data format from Prometheus")
 	}
 	time, err := lastData[0].Int64()
 	if err != nil {
-		return nil, fmt.Errorf("invalid time format")
+		return nil, fmt.Errorf("invalid TIME format from Prometheus")
 	}
 	value, err := lastData[1].Float64()
 	if err != nil {
-		return nil, fmt.Errorf("invalid value")
+		return nil, fmt.Errorf("invalid VALUE format from Prometheus")
 	}
 	return &RestoRequest{
 		Model: &SliRawData{
@@ -153,13 +153,22 @@ func fetchData(conf MyEvent) (*RestoResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	restoReqData, err := convertData(rawData, conf)
+	_, err = convertData(rawData, conf)
 	if err != nil {
 		return nil, err
 	}
-	restoResp, err := sendDataToResto(restoReqData)
-	if err != nil {
-		return nil, err
+	// restoResp, err := sendDataToResto(restoReqData)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	restoResp := &RestoResponse{
+		ID:        1,
+		CreatedAt: 1,
+		OrgID:     1,
+		SliID:     1,
+		Value:     100,
+		Start:     121314112,
+		End:       121314212,
 	}
 	return restoResp, err
 }
