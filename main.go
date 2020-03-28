@@ -176,20 +176,32 @@ func fetchData(conf MyEvent) (*RestoResponse, error) {
 func HandleRequest(ctx context.Context, body events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	var conf MyEvent
 	if err := json.Unmarshal([]byte(body.Body), &conf); err != nil {
-		return response(http.StatusBadRequest, err.Error()), nil
+		return failed(http.StatusBadRequest, err), nil
 	}
 	data, err := fetchData(conf)
 	if err != nil {
-		return response(http.StatusInternalServerError, err.Error()), nil
+		return failed(http.StatusInternalServerError, err), nil
 	}
 	b, err := json.Marshal(data)
 	if err != nil {
-		return response(http.StatusInternalServerError, err.Error()), nil
+		return failed(http.StatusInternalServerError, err), nil
 	}
-	return response(http.StatusOK, string(b)), nil
+	return success(http.StatusOK, string(b)), nil
 }
 
-func response(code int, body string) *events.APIGatewayProxyResponse {
+func failed(code int, err error) *events.APIGatewayProxyResponse {
+	type jsonerror struct {
+		Message string `json:"error"`
+	}
+	j := jsonerror{err.Error()}
+	b, err := json.Marshal(j)
+	if err != nil {
+		return nil
+	}
+	return success(code, string(b))
+}
+
+func success(code int, body string) *events.APIGatewayProxyResponse {
 	return &events.APIGatewayProxyResponse{
 		StatusCode: code,
 		Body:       body,
