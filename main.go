@@ -64,6 +64,25 @@ type MyEvent struct {
 	SliID int    `json:"sliId"`
 }
 
+func (e *MyEvent) validate() error {
+	if e.Query == "" {
+		return fmt.Errorf("query is required field")
+	}
+	if 0 >= e.Start || 0 >= e.End {
+		return fmt.Errorf("start time and/or end time must be bigger than 0")
+	}
+	if e.Start > e.End {
+		return fmt.Errorf("start time is bigger than the end time: %v > %v", e.Start, e.End)
+	}
+	if 0 >= e.SliID {
+		return fmt.Errorf("sliId must be bigger than 0: 0 >= %v", e.SliID)
+	}
+	if 0 >= e.Step {
+		return fmt.Errorf("step must be bigger than 0: 0 >= %v", e.SliID)
+	}
+	return nil
+}
+
 func init() {
 	if err := envconf.Parse(&DefaultConfig); err != nil {
 		panic(fmt.Errorf("cannot read config from env: %s", err))
@@ -153,22 +172,13 @@ func fetchData(conf MyEvent) (*RestoResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	_, err = convertData(rawData, conf)
+	restoReqData, err := convertData(rawData, conf)
 	if err != nil {
 		return nil, err
 	}
-	// restoResp, err := sendDataToResto(restoReqData)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	restoResp := &RestoResponse{
-		ID:        1,
-		CreatedAt: 1,
-		OrgID:     1,
-		SliID:     1,
-		Value:     100,
-		Start:     121314112,
-		End:       121314212,
+	restoResp, err := sendDataToResto(restoReqData)
+	if err != nil {
+		return nil, err
 	}
 	return restoResp, err
 }
@@ -176,6 +186,9 @@ func fetchData(conf MyEvent) (*RestoResponse, error) {
 func HandleRequest(ctx context.Context, body events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 	var conf MyEvent
 	if err := json.Unmarshal([]byte(body.Body), &conf); err != nil {
+		return failed(http.StatusBadRequest, err), nil
+	}
+	if err := conf.validate(); err != nil {
 		return failed(http.StatusBadRequest, err), nil
 	}
 	data, err := fetchData(conf)
