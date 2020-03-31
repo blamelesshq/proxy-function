@@ -209,7 +209,10 @@ func failed(code int, err error) *events.APIGatewayProxyResponse {
 	j := jsonerror{err.Error()}
 	b, err := json.Marshal(j)
 	if err != nil {
-		return nil
+		return &events.APIGatewayProxyResponse{
+			StatusCode: http.StatusInternalServerError,
+			Body:       err.Error(),
+		}
 	}
 	return success(code, string(b))
 }
