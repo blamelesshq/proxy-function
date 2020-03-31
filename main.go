@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -46,14 +47,18 @@ type RestoRequest struct {
 	Model *SliRawData `json:"model"`
 }
 
+type RestoResponseWrapper struct {
+	Response RestoResponse `json:"rawData"`
+}
+
 type RestoResponse struct {
-	ID        int `json:"id"`
-	CreatedAt int `json:"createdAt"`
-	OrgID     int `json:"orgId"`
-	SliID     int `json:"sliId"`
-	Value     int `json:"value"`
-	Start     int `json:"start"`
-	End       int `json:"end"`
+	ID        int     `json:"id"`
+	CreatedAt int     `json:"createdAt"`
+	OrgID     int     `json:"orgId"`
+	SliID     int     `json:"sliId"`
+	Value     float64 `json:"value"`
+	Start     int     `json:"start"`
+	End       int     `json:"end"`
 }
 
 type MyEvent struct {
@@ -114,7 +119,7 @@ func getPrometheusRawData(conf MyEvent) (*PrometheusResponse, error) {
 	return res, nil
 }
 
-func sendDataToResto(data *RestoRequest) (*RestoResponse, error) {
+func sendDataToResto(data *RestoRequest) (*RestoResponseWrapper, error) {
 	d, err := json.Marshal(data)
 	if err != nil {
 		return nil, fmt.Errorf("cannot encode to json: %s", err)
@@ -130,7 +135,7 @@ func sendDataToResto(data *RestoRequest) (*RestoResponse, error) {
 		return nil, fmt.Errorf("cannot make make request to Resto: %s", err)
 	}
 	defer resp.Body.Close()
-	res := &RestoResponse{}
+	res := &RestoResponseWrapper{}
 	if err := json.NewDecoder(resp.Body).Decode(res); err != nil {
 		return nil, fmt.Errorf("cannot parse body from Resto: %s", err)
 	}
@@ -167,12 +172,13 @@ func convertData(res *PrometheusResponse, conf MyEvent) (*RestoRequest, error) {
 	}, nil
 }
 
-func fetchData(conf MyEvent) (*RestoResponse, error) {
+func fetchData(conf MyEvent) (*RestoResponseWrapper, error) {
 	rawData, err := getPrometheusRawData(conf)
 	if err != nil {
 		return nil, err
 	}
 	restoReqData, err := convertData(rawData, conf)
+	log.Printf("restoReqData: %+v\n", restoReqData.Model)
 	if err != nil {
 		return nil, err
 	}
@@ -180,7 +186,8 @@ func fetchData(conf MyEvent) (*RestoResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-	return restoResp, err
+	log.Printf("restoResp: %+v\n", restoResp)
+	return restoResp, nil
 }
 
 func HandleRequest(ctx context.Context, body events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -225,15 +232,5 @@ func success(code int, body string) *events.APIGatewayProxyResponse {
 }
 
 func main() {
-	// uncomment for local test
-	// res, err := HandleRequest(context.Background(), MyEvent{
-	// 	Query: "up",
-	// 	Start: 1585313003,
-	// 	End:   1585313123,
-	// 	Step:  15,
-	// 	SliID: 1,
-	// })
-	// fmt.Printf("%+v", res)
-	// fmt.Println("error:", err)
 	lambda.Start(HandleRequest)
 }
