@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
@@ -48,7 +49,12 @@ type RestoRequest struct {
 }
 
 type RestoResponseWrapper struct {
-	Response RestoResponse `json:"rawData"`
+	Response *RestoResponse `json:"rawData"`
+}
+
+type RestoErrorResponse struct {
+	Error   string `json:"error"`
+	Message string `json:"message"`
 }
 
 type RestoResponse struct {
@@ -136,8 +142,19 @@ func sendDataToResto(data *RestoRequest) (*RestoResponseWrapper, error) {
 	}
 	defer resp.Body.Close()
 	res := &RestoResponseWrapper{}
-	if err := json.NewDecoder(resp.Body).Decode(res); err != nil {
+	bodyCopy := bytes.NewBuffer([]byte{})
+	r := io.TeeReader(resp.Body, bodyCopy)
+	if err := json.NewDecoder(r).Decode(res); err != nil {
 		return nil, fmt.Errorf("cannot parse body from Resto: %s", err)
+	}
+	// if we get empty response, we get error in response
+	if res.Response == nil {
+		// try get error message
+		restoError := &RestoErrorResponse{}
+		if err := json.NewDecoder(bodyCopy).Decode(restoError); err != nil {
+			return nil, fmt.Errorf("cannot parse RESTO error: %s", err)
+		}
+		return nil, fmt.Errorf("RESTO API failed: message: %s; error: %s", restoError.Message, restoError.Error)
 	}
 	return res, nil
 }
