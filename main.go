@@ -195,7 +195,6 @@ func fetchData(conf MyEvent) (*RestoResponseWrapper, error) {
 		return nil, err
 	}
 	restoReqData, err := convertData(rawData, conf)
-	log.Printf("restoReqData: %+v\n", restoReqData.Model)
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +202,6 @@ func fetchData(conf MyEvent) (*RestoResponseWrapper, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("restoResp: %+v\n", restoResp)
 	return restoResp, nil
 }
 
@@ -227,6 +225,7 @@ func HandleRequest(ctx context.Context, body events.APIGatewayProxyRequest) (*ev
 }
 
 func failed(code int, err error) *events.APIGatewayProxyResponse {
+	log.Printf("FAILED: %s\n", err)
 	type jsonerror struct {
 		Message string `json:"error"`
 	}
