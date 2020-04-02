@@ -10,9 +10,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  digest = "1:d92a0c10fb57de8742c33500c2fd96bd202fcafd14cb247d5185578f86b276fb"
+  digest = "1:232e60557ec04caff67a2f30b02c0f44601881d3f79bad2dc5320f5de03b5e68"
   name = "github.com/aws/aws-lambda-go"
   packages = [
+    "events",
     "lambda",
     "lambda/handlertrace",
     "lambda/messages",
@@ -27,6 +28,7 @@
   analyzer-version = 1
   input-imports = [
     "github.com/antonmashko/envconf",
+    "github.com/aws/aws-lambda-go/events",
     "github.com/aws/aws-lambda-go/lambda",
   ]
   solver-name = "gps-cdcl"

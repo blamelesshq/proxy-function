@@ -1,13 +1,15 @@
-exec=lambda
+docker_name=lambda
 init: build run
 
 build:
-	go get ./...
-	go build -o $(exec) .
+	docker build -t $(docker_name):v1 .
+
 run:
-	 ./$(exec)
-zip-aws:
-	GOOS=linux go build -o $(exec) .
-	zip function.zip $(exec)
+	docker run --name $(docker_name) $(docker_name):v1
+
+zip-aws: init
+	docker cp $(docker_name):/go/src/github.com/blamelesshq/lambda-prometheus/function.zip ./function.zip
+	docker rm $(docker_name)
+
 deploy: zip-aws
 	terraform apply
