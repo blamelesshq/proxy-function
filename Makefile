@@ -9,3 +9,5 @@ run:
 zip-aws:
 	GOOS=linux go build -o $(exec) .
 	zip function.zip $(exec)
+deploy: zip-aws
+	terraform apply

@@ -75,6 +75,7 @@ resource "aws_api_gateway_method" "api_method_for_api_resource" {
   resource_id   = "${aws_api_gateway_resource.api_resource_for_api_gateway.id}"
   http_method   = "POST"
   authorization = "NONE"
+  api_key_required = true
 }
 
 resource "aws_api_gateway_integration" "integration" {
@@ -153,6 +154,31 @@ resource "aws_api_gateway_deployment" "deploy_api_gateway" {
   stage_name = "${var.api_gateway_deploy_name}"
 }
 
+resource "aws_api_gateway_api_key" "aws_api_key_for_lambda_api" {
+  name="prometheus_lambda_key"
+}
+
+resource "aws_api_gateway_usage_plan" "aws_prometheus_lambda_plan" {
+  name="prometheus_lambda_plan"
+
+  api_stages {
+    api_id = "${aws_api_gateway_rest_api.api_gateway_for_lambda.id}"
+    stage = "${aws_api_gateway_deployment.deploy_api_gateway.stage_name}"
+  }
+}
+
+resource "aws_api_gateway_usage_plan_key" "main" {
+  key_id        = "${aws_api_gateway_api_key.aws_api_key_for_lambda_api.id}"
+  key_type      = "API_KEY"
+  usage_plan_id = "${aws_api_gateway_usage_plan.aws_prometheus_lambda_plan.id}"
+}
+
 output "deploy_api_geteway_url" {
   value = "${aws_api_gateway_deployment.deploy_api_gateway.invoke_url}/${var.api_gateway_deploy_name}"
+  description = "Use this URL for fetch a data from the Prometheus"
+}
+
+output "api_key" {
+  value = "${aws_api_gateway_api_key.aws_api_key_for_lambda_api.value}"
+  description = "Use this token in each a request to the URL Prometheus"
 }
