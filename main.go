@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -11,6 +12,10 @@ import (
 	"github.com/antonmashko/envconf"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+	"github.com/aws/aws-sdk-go/aws/session"
+	_ "github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/kms"
+	_ "github.com/aws/aws-sdk-go/service/kms"
 )
 
 type Config struct {
@@ -53,6 +58,33 @@ func init() {
 	if err := envconf.Parse(&DefaultConfig); err != nil {
 		panic(fmt.Errorf("cannot read config from env: %s", err))
 	}
+	kmsClient := kms.New(session.New())
+	// get login
+	l, err := base64.StdEncoding.DecodeString(DefaultConfig.Login)
+	if err != nil {
+		panic(err)
+	}
+	input := &kms.DecryptInput{
+		CiphertextBlob: l,
+	}
+	response, err := kmsClient.Decrypt(input)
+	if err != nil {
+		panic(err)
+	}
+	DefaultConfig.Login = string(response.Plaintext[:])
+	// get password
+	p, err := base64.StdEncoding.DecodeString(DefaultConfig.Password)
+	if err != nil {
+		panic(err)
+	}
+	input = &kms.DecryptInput{
+		CiphertextBlob: p,
+	}
+	response, err = kmsClient.Decrypt(input)
+	if err != nil {
+		panic(err)
+	}
+	DefaultConfig.Password = string(response.Plaintext[:])
 }
 
 func fetch(conf MyEvent) (*Response, error) {

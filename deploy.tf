@@ -7,11 +7,6 @@ variable "prometheus_url" {
   description = "URL to prometheus"
 }
 
-variable "resto_url" {
-  type = string
-  description = "URL to Resto API"
-}
-
 variable "prometheus_login" {
   type = string
   description = "Login for Prometheus"
@@ -20,11 +15,6 @@ variable "prometheus_login" {
 variable "prometheus_password" {
   type = string
   description = "Password for Prometheus"
-}
-
-variable "resto_auth_token" {
-  type = string
-  description = "Token for authorization on the Resto API"
 }
 
 variable "api_gateway_deploy_name" {
@@ -102,15 +92,14 @@ resource "aws_lambda_function" "prometheus_lambda" {
   handler       = "lambda"
   source_code_hash = "${filebase64sha256("function.zip")}"
   runtime = "go1.x"
-  depends_on = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.lambda_log_group"]
+  depends_on = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.lambda_log_group", "aws_iam_role_policy_attachment.lambda_dkms"]
+  kms_key_arn = "${aws_kms_key.main.arn}"
 
   environment {
     variables = {
       PROMETHEUS_URL = "${var.prometheus_url}"
-      RESTO_URL = "${var.resto_url}"
-      PROMETHEUS_LOGIN = "${var.prometheus_login}"
-      PROMETHEUS_PASSWORD = "${var.prometheus_password}"
-      RESTO_AUTH_TOKEN = "${var.resto_auth_token}"
+      PROMETHEUS_LOGIN = "${aws_kms_ciphertext.prometheus_login.ciphertext_blob}"
+      PROMETHEUS_PASSWORD = "${aws_kms_ciphertext.prometheus_password.ciphertext_blob}"
     }
   }
 }
@@ -143,10 +132,40 @@ resource "aws_iam_policy" "lambda_logging" {
 EOF
 }
 
+resource "aws_iam_policy" "lambda_kms" {
+  name = "lambda_kms_decrypt"
+  path = "/"
+  description = "IAM policy for decrypt env for a lambda"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": {
+    "Effect": "Allow",
+    "Action": [
+      "kms:DescribeKey",
+      "kms:GenerateDataKey",
+      "kms:Decrypt"
+    ],
+    "Resource": [
+      "${aws_kms_key.main.arn}"
+    ]
+  }
+}
+EOF
+}
+
+
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
   role       = "${aws_iam_role.iam_for_lambda.name}"
   policy_arn = "${aws_iam_policy.lambda_logging.arn}"
 }
+
+resource "aws_iam_role_policy_attachment" "lambda_dkms" {
+  role       = "${aws_iam_role.iam_for_lambda.name}"
+  policy_arn = "${aws_iam_policy.lambda_kms.arn}"
+}
+
 
 resource "aws_api_gateway_deployment" "deploy_api_gateway" {
   depends_on = ["aws_api_gateway_integration.integration"]
@@ -181,4 +200,19 @@ output "deploy_api_geteway_url" {
 output "api_key" {
   value = "${aws_api_gateway_api_key.aws_api_key_for_lambda_api.value}"
   description = "Use this token in each a request to the URL Prometheus"
+}
+
+resource "aws_kms_key" "main" {
+  description = "key for encrypt lambda Prometheus variables"
+  deletion_window_in_days = 7
+}
+
+resource "aws_kms_ciphertext" "prometheus_login" {
+  key_id = "${aws_kms_key.main.key_id}"
+  plaintext = "${var.prometheus_login}"
+}
+
+resource "aws_kms_ciphertext" "prometheus_password" {
+  key_id = "${aws_kms_key.main.key_id}"
+  plaintext = "${var.prometheus_password}"
 }
