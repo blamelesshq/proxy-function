@@ -16,10 +16,8 @@ Build the code for deployment to `AWS lambda`:
 1. Set environment variables for your lambda function in AWS console(or use CLI):
 ```bash
 export PROMETHEUS_URL=<PROMETHEUS_URL>
-export RESTO_URL=<RESTO_URL>
 export PROMETHEUS_LOGIN=<PROMETHEUS_LOGIN>
 export PROMETHEUS_PASSWORD=<PROMETHEUS_PASSWORD>
-export RESTO_AUTH_TOKEN=<RESTO_AUTH_TOKEN>
 ```
 2. Run command from `Makefile`:
 ```bash
