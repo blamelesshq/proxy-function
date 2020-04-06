@@ -12,4 +12,4 @@ zip-aws: init
 	docker rm $(docker_name)
 
 deploy: zip-aws
-	terraform apply
+	terraform apply ./deploy
