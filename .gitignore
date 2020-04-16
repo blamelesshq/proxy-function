@@ -1,6 +1,8 @@
 lambda
+lambda-prometheus
 .env
 function.zip
+function_gcp.zip
 .terraform/*
 *.tfstate
 *.tfstate.*
@@ -9,3 +11,4 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+deploy/*/.terraform
