@@ -1,0 +1,23 @@
+swagger: '2.0'
+info:
+  title: Cloud Endpoints + GCF
+  description: Sample API on Cloud Endpoints with a Google Cloud Functions backend
+  version: 1.0.0
+host: ${host}
+schemes:
+  - https
+produces:
+  - application/json
+paths:
+  /fetch:
+    get:
+      summary: Greet a user
+      operationId: fetch
+      x-google-backend:
+        address: ${function_url}/HandleRequestGCP
+        protocol: h2
+      responses:
+        '200':
+          description: A successful response
+          schema:
+            type: string

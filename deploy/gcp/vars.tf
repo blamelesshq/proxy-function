@@ -15,8 +15,20 @@ variable "prometheus_password" {
 
 variable "project" {
   type = string
+  description = "Porjcet ID/Name for deploy"
 }
 
 variable "region" {
   type = string
+  description = "Region for deploy"
+}
+
+variable "api_version_minor" {
+  type= string
+  description = "API minor version"
+}
+
+variable "api_version_major" {
+  type= string
+  description = "API major version"
 }
