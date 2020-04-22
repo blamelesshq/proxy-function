@@ -33,13 +33,13 @@ resource "google_cloudfunctions_function" "function" {
   }
 }
 
-# IAM entry for all users to invoke the function
 resource "google_cloudfunctions_function_iam_member" "invoker" {
   project        = google_cloudfunctions_function.function.project
   region         = google_cloudfunctions_function.function.region
   cloud_function = google_cloudfunctions_function.function.name
 
   role   = "roles/cloudfunctions.invoker"
+  # member = "serviceAccount:${google_service_account.run_account.email}"
   member = "allUsers"
 }
 
@@ -67,6 +67,8 @@ resource "google_cloud_run_service" "default" {
 
   template {
     spec {
+      # TODO(illia-korotia): with custom service_account_name we get error. I wait a response to my issue.
+      # service_account_name = google_service_account.run_account.email
       containers {
         image = "gcr.io/endpoints-release/endpoints-runtime-serverless:2"
       }
@@ -78,7 +80,6 @@ locals {
   api_gateway_url = google_cloud_run_service.default.status[0].url
 }
 
-# TODO(illia-korotia): add auth API key
 resource "google_cloud_run_service_iam_policy" "noauth" {
   location    = google_cloud_run_service.default.location
   project     = google_cloud_run_service.default.project
@@ -86,6 +87,11 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
 
   policy_data = data.google_iam_policy.noauth.policy_data
 }
+
+# resource "google_service_account" "run_account" {
+#   account_id   = "osdu-gcp-sa"
+#   display_name = "Account for GCP RUN services"
+# }
 
 data "google_iam_policy" "noauth" {
   binding {
