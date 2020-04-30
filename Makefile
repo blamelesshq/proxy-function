@@ -7,7 +7,10 @@ build:
 run:
 	docker run --name $(docker_name) $(docker_name):v1
 
-zip-aws: init
+zip-aws:
+	# remove container if it exists. Ignore error when container not exist
+	docker rm $(docker_name) || true 
+	$(MAKE) init
 	docker cp $(docker_name):/go/src/github.com/blamelesshq/lambda-prometheus/function.zip ./function.zip
 	docker rm $(docker_name)
 
