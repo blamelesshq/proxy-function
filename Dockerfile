@@ -1,4 +1,4 @@
-FROM golang:1.13.9
+FROM golang:1.17beta1
 WORKDIR /go/src/github.com/blamelesshq/lambda-prometheus
 COPY go.mod .
 COPY go.sum .
