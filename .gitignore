@@ -12,3 +12,12 @@ override.tf.json
 *_override.tf
 *_override.tf.json
 deploy/*/.terraform
+
+
+bin
+obj
+appsettings.json
+local.settings.json
+*.exe
+main
+.vscode/*

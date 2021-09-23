@@ -36,11 +36,11 @@ func NewFetch(values map[string]string) (*Fetch, error) {
 }
 
 func (f *Fetch) Do() (*Response, error) {
-	req, err := http.NewRequest(http.MethodGet, DefaultConfig.PrometheusURL, nil)
+	req, err := http.NewRequest(http.MethodGet, "http://prometheus23092021.westeurope.azurecontainer.io:9090", nil)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create Prometheus request: %s", err)
 	}
-	req.SetBasicAuth(DefaultConfig.Login, DefaultConfig.Password)
+	// req.SetBasicAuth(DefaultConfig.Login, DefaultConfig.Password)
 	req.URL.Path = f.Path
 	req.URL.RawQuery = f.Params
 	fmt.Println("URL", req.URL.String())

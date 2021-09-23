@@ -1,10 +1,19 @@
 package main
 
 import (
-	"github.com/aws/aws-lambda-go/lambda"
+	"log"
+	"net/http"
+	"os"
+
 	"github.com/blamelesshq/lambda-prometheus/fetch"
 )
 
 func main() {
-	lambda.Start(fetch.HandleRequestAWS)
+	listenAddr := ":8080"
+	if val, ok := os.LookupEnv("FUNCTIONS_CUSTOMHANDLER_PORT"); ok {
+		listenAddr = ":" + val
+	}
+	http.HandleFunc("/api/FetchExample", fetch.HandleRequestAzure)
+	log.Printf("About to listen on %s. Go to https://127.0.0.1%s/", listenAddr, listenAddr)
+	log.Fatal(http.ListenAndServe(listenAddr, nil))
 }
