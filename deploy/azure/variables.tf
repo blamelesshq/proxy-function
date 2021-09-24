@@ -1,3 +1,4 @@
+#AzureFunction
 variable "location" {
     type    =   string
     default =   "westeurope"
@@ -5,7 +6,7 @@ variable "location" {
 
 variable "prefix" {
     type    =   string
-    default =   "240920211"
+    default =   "210920211"
 }
 
 variable "skuTier" {
@@ -68,7 +69,30 @@ variable "PROMETHEUS_PASSWORD" {
     default =   ""
 }
 
-variable "TestKeyVault" {
-    type    =   string
-    default =   ""
+
+# KeyVault
+variable "resource_group_name" {
+  type        = string
+  description = "RG name in Azure"
+}
+
+variable "keyvault_location" {
+  type        = string
+  description = "RG location in Azure"
+}
+
+variable "keyvault_name" {
+  type        = string
+  description = "Key Vault name in Azure"
+}
+
+variable "secret_name" {
+  type        = string
+  description = "Key Vault Secret name in Azure"
+}
+
+variable "secret_value" {
+  type        = string
+  description = "Key Vault Secret value in Azure"
+  sensitive   = true
 }

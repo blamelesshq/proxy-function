@@ -68,6 +68,7 @@ resource "azurerm_function_app" "funcdeploy" {
       "PROMETHEUS_LOGIN" = "${var.PROMETHEUS_LOGIN}"
       "RESTO_URL" = "${var.RESTO_URL}"
       "PROMETHEUS_URL" = "${var.PROMETHEUS_URL}"
+      "TestKeyVault"   = "${var.TestKeyVault}"
   }
 
 
