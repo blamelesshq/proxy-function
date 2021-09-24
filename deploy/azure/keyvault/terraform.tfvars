@@ -1,0 +1,5 @@
+resource_group_name    = "prom_test_keyvault_24092021"
+location               = "West Europe"
+keyvault_name          = "demokv24092021"
+secret_name            = "DatabasePassword"
+secret_value           = "@Aa123456789!"
