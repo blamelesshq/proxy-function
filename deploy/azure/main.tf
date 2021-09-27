@@ -1,13 +1,3 @@
-module "keyvault" {
-  source                            = "./keyvault"
-  resource_group_name               = var.resource_group_name
-  location                          = var.keyvault_location
-  keyvault_name                     = var.keyvault_name
-  secret_name                       = var.secret_name
-  secret_value                      = var.secret_value
-}
-
-
 module "function" {
   source                            = "./function"
   location                          = var.location
@@ -25,4 +15,19 @@ module "function" {
   PROMETHEUS_LOGIN                  = var.PROMETHEUS_LOGIN
   PROMETHEUS_PASSWORD               = var.PROMETHEUS_PASSWORD
   TestKeyVault                      = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/${var.secret_name})"
+}
+
+module "keyvault" {
+  source                            = "./keyvault"
+  resource_group_name               = var.resource_group_name
+  location                          = var.keyvault_location
+  keyvault_name                     = var.keyvault_name
+  secret_name                       = var.secret_name
+  secret_value                      = var.secret_value
+}
+
+module "keyvaultAccess" {
+  source                            = "./keyvaultAccess"
+  identityId                        = module.function.identityId
+  keyVaultId                        = module.keyvault.kv_id
 }

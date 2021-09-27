@@ -1,18 +1,18 @@
 # KeyVault
-resource_group_name    = "prom_test_keyvault_24092021-1"
+resource_group_name    = "prom_test_keyvault_27092021-1"
 keyvault_location      = "West Europe"
-keyvault_name          = "demokv2409202103"
+keyvault_name          = "demokv2709202103"
 secret_name            = "DatabasePassword"
 secret_value           = "@Aa123456789!"
 
 #AzureFunction
 location                                    = "westeurope"
-prefix                                      = "240920211"
+prefix                                      = "270920211"
 skuTier                                     = "Dynamic"
 skuSize                                     = "Y1"
 functionAppName                             = "functions-consumption-231"
 appInsightsName                             = "appinsights"
-storageAccountName                          = "st24092021"
+storageAccountName                          = "st27092021"
 storageAccountTier                          = "Standard"
 storageAccountReplicationType               = "LRS"
 IS_GCP                                      = "Azure"
