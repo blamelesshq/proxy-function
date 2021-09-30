@@ -1,11 +1,11 @@
-variable "identityId" {
+variable "identity_id" {
   type        = string
-  description = "IdentityId"
+  description = "Azure Function Service Principal object identifier"
   sensitive   = true
 }
 
-variable "keyVaultId" {
+variable "keyvault_id" {
   type        = string
-  description = "KeyVaultId"
+  description = "Azure Key Vault Identifier"
   sensitive   = true
 }

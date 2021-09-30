@@ -1,17 +1,12 @@
-resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
-  location = var.location
-}
-
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault" "keyvault" {
   name                        = var.keyvault_name
   location                    = var.location
-  resource_group_name         = azurerm_resource_group.rg.name
+  resource_group_name         = var.resource_group_name
   enabled_for_disk_encryption = false
   tenant_id                   = data.azurerm_client_config.current.tenant_id
-  soft_delete_enabled         = true
+  #soft_delete_enabled         = false
   soft_delete_retention_days  = 7
   purge_protection_enabled    = false
 
@@ -44,9 +39,27 @@ resource "azurerm_key_vault" "keyvault" {
   # }
 }
 
-resource "azurerm_key_vault_secret" "db-pwd" {
-  name         = var.secret_name
-  value        = var.secret_value
+resource "azurerm_key_vault_secret" "PROMETHEUS_URL" {
+  name         = "PROMETHEUS-URL"
+  value        = var.PROMETHEUS_URL
+  key_vault_id = azurerm_key_vault.keyvault.id
+}
+
+resource "azurerm_key_vault_secret" "RESTO_URL" {
+  name         = "RESTO-URL"
+  value        = var.RESTO_URL
+  key_vault_id = azurerm_key_vault.keyvault.id
+}
+
+resource "azurerm_key_vault_secret" "PROMETHEUS_LOGIN" {
+  name         = "PROMETHEUS-LOGIN"
+  value        = var.PROMETHEUS_LOGIN
+  key_vault_id = azurerm_key_vault.keyvault.id
+}
+
+resource "azurerm_key_vault_secret" "PROMETHEUS_PASSWORD" {
+  name         = "PROMETHEUS-PASSWORD"
+  value        = var.PROMETHEUS_PASSWORD
   key_vault_id = azurerm_key_vault.keyvault.id
 }
 

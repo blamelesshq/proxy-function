@@ -13,16 +13,14 @@ type Config struct {
 
 var DefaultConfig = Config{}
 
-var isGCP = os.Getenv("IS_GCP")
+var cloudPlatform = os.Getenv("CLOUD_PLATFORM")
 
 func init() {
-	fmt.Println("starting init config")
-	fmt.Print("GCPLOGG " + isGCP)
-	if isGCP == "" {
+	if cloudPlatform == "" {
 		fmt.Println("init AWS config")
 		// use kms for encrypt aws variables
 		// InitAWSConfig()
-	} else if isGCP == "AWS" {
+	} else if cloudPlatform == "AWS" {
 		fmt.Println("init GCP config")
 		// InitGCPConfig()
 	} else {

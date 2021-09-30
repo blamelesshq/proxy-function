@@ -13,13 +13,22 @@ variable "keyvault_name" {
   description = "Key Vault name in Azure"
 }
 
-variable "secret_name" {
+variable "PROMETHEUS_URL" {
   type        = string
-  description = "Key Vault Secret name in Azure"
+  description = "PROMETHEUS_URL"
 }
 
-variable "secret_value" {
+variable "RESTO_URL" {
   type        = string
-  description = "Key Vault Secret value in Azure"
-  sensitive   = true
+  description = "RESTO_URL"
+}
+
+variable "PROMETHEUS_LOGIN" {
+  type        = string
+  description = "PROMETHEUS_LOGIN"
+}
+
+variable "PROMETHEUS_PASSWORD" {
+  type        = string
+  description = "PROMETHEUS_PASSWORD"
 }

@@ -29,7 +29,7 @@ resource "google_cloudfunctions_function" "function" {
     PROMETHEUS_LOGIN="${var.prometheus_login}"
     PROMETHEUS_URL="${var.prometheus_url}"
     PROMETHEUS_PASSWORD="${var.prometheus_password}"
-    IS_GCP="GCP"
+    CLOUD_PLATFORM="GCP"
   }
 }
 

@@ -1,22 +1,24 @@
-# KeyVault
-resource_group_name    = "prom_test_keyvault_27092021-1"
-keyvault_location      = "West Europe"
-keyvault_name          = "demokv2709202103"
-secret_name            = "DatabasePassword"
-secret_value           = "@Aa123456789!"
-
-#AzureFunction
+# General
+resource_group_name                         = "rg-blameless-prometheus"
 location                                    = "westeurope"
-prefix                                      = "270920211"
-skuTier                                     = "Dynamic"
-skuSize                                     = "Y1"
-functionAppName                             = "functions-consumption-231"
-appInsightsName                             = "appinsights"
-storageAccountName                          = "st27092021"
-storageAccountTier                          = "Standard"
-storageAccountReplicationType               = "LRS"
-IS_GCP                                      = "Azure"
+
+# KeyVault
+keyvault_name                               = "kv-blameless-prometheus"
 PROMETHEUS_URL                              = "http://prometheus23092021.westeurope.azurecontainer.io:9090/"
 RESTO_URL                                   = ""
 PROMETHEUS_LOGIN                            = ""
 PROMETHEUS_PASSWORD                         = ""
+
+#AzureFunction
+sku_tier                                    = "Dynamic"
+sku_size                                    = "Y1"
+functionapp_name                            = "fa-blameless-prometheus"
+appinsights_name                            = "ai-blameless-prometheus"
+storage_account_name                        = "stblamelessprometheus"
+storage_account_tier                        = "Standard"
+storage_account_replication_type            = "LRS"
+CLOUD_PLATFORM                              = "Azure"
+azure_func_name                             = "blamelessprometheusfunc"
+
+#ApiManagement
+apiManagementName                           = "apiblameless35092021"

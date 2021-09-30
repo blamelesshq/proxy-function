@@ -1,74 +1,94 @@
+variable "resource_group_name" {
+  type        = string
+  description = "Resource Group Name in Azure"
+}
+
 variable "location" {
-    type    =   string
-    default =   "westeurope"
+    type        =   string
+    description =   "Resources Location"
+    default     =   "westeurope"
 }
 
-variable "prefix" {
-    type    =   string
-    default =   "240920211"
+variable "sku_tier" {
+    type        =   string
+    description =   "Azure function SKU"
+    default     =   "Dynamic"
 }
 
-variable "skuTier" {
-    type    =   string
-    default =   "Dynamic"
+variable "sku_size" {
+    type        =   string
+    description =   "Azure function SKU Size"
+    default     =   "Y1"
 }
 
-variable "skuSize" {
-    type    =   string
-    default =   "Y1"
+variable "functionapp_name" {
+    type        =   string
+    description = "Azure Function Name"
+    default     = "fa-blameless-prometheus"
 }
 
-variable "functionAppName" {
-    type    =   string
-    default =   "functions-consumption-asp"
+variable "appinsights_name" {
+    type        = string
+    description = "Azure Application Insight Instance Name (connected with Azure Function)"
+    default     = "ai-blameless-prometheus"
 }
 
-variable "appInsightsName" {
-    type    =   string
-    default =   "appinsights"
+variable "storage_account_name" {
+    type        =  string
+    description = "Azure Storage Account Name (needed for the Azure Function)"
+    default     = "stblamelessprometheus"
 }
 
-variable "storageAccountName" {
-    type    =   string
-    default =   "storage"
+variable "storage_account_tier" {
+    type        =   string
+    description = "Azure Storage Account Tier (needed for the Azure Function)"
+    default     =   "Standard"
 }
 
-variable "storageAccountTier" {
-    type    =   string
-    default =   "Standard"
+variable "storage_account_replication_type" {
+    type        =   string
+    description = "Azure Storage Account Replication Type (needed for the Azure Function)"
+    default     =   "LRS"
 }
 
-variable "storageAccountReplicationType" {
-    type    =   string
-    default =   "LRS"
-}
-
-variable "IS_GCP" {
-    type    =   string
-    default =   "Azure"
+variable "CLOUD_PLATFORM" {
+    type        =   string
+    description = "Cloud Platform env variable needed for the Azure Function Logic"
+    default     =   "Azure"
 }
 
 variable "PROMETHEUS_URL" {
-    type    =   string
-    default =   "http://prometheus23092021.westeurope.azurecontainer.io:9090/"
+    type        = string
+    description = "Prometheus Server URL Configuration"
+    default     = "http://prometheus23092021.westeurope.azurecontainer.io:9090/"
 }
 
 variable "RESTO_URL" {
-    type    =   string
-    default =   ""
+    type        =   string
+    description = "Resto URL"
+    default     =   ""
 }
 
 variable "PROMETHEUS_LOGIN" {
-    type    =   string
-    default =   ""
+    type        =   string
+    description = "Resto Login"
+    default     =   ""
 }
 
 variable "PROMETHEUS_PASSWORD" {
-    type    =   string
-    default =   ""
+    type        =   string
+    description =   "Prometheus server password (if any)"
+    default     =   ""
 }
 
-variable "TestKeyVault" {
-    type    =   string
-    default =   ""
+variable "azure_func_name" {
+    type        =   string
+    description =   "Azure Func Name"
+    default     =   "blamelessprometheusfunc"
 }
+
+variable "resource_group_id" {
+    type        =   string
+    description =   "Azure Resource Group Id"
+}
+

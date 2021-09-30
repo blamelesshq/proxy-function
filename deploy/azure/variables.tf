@@ -1,98 +1,83 @@
-#AzureFunction
+# General
+variable "resource_group_name" {
+  type        = string
+  description = "Resource Group Name in Azure"
+}
+
 variable "location" {
-    type    =   string
-    default =   "westeurope"
+    type        =   string
+    description = "Resources Location"
 }
 
-variable "prefix" {
-    type    =   string
-    default =   "210920211"
-}
-
-variable "skuTier" {
-    type    =   string
-    default =   "Dynamic"
-}
-
-variable "skuSize" {
-    type    =   string
-    default =   "Y1"
-}
-
-variable "functionAppName" {
-    type    =   string
-    default =   "functions-consumption-asp"
-}
-
-variable "appInsightsName" {
-    type    =   string
-    default =   "appinsights"
-}
-
-variable "storageAccountName" {
-    type    =   string
-    default =   "storage"
-}
-
-variable "storageAccountTier" {
-    type    =   string
-    default =   "Standard"
-}
-
-variable "storageAccountReplicationType" {
-    type    =   string
-    default =   "LRS"
-}
-
-variable "IS_GCP" {
-    type    =   string
-    default =   "Azure"
+# KeyVault
+variable "keyvault_name" {
+  type        = string
+  description = "Key Vault Name in Azure"
 }
 
 variable "PROMETHEUS_URL" {
-    type    =   string
-    default =   "http://prometheus23092021.westeurope.azurecontainer.io:9090/"
+    type        =   string
+    description = "Prometheus Server URL Configuration"
 }
 
 variable "RESTO_URL" {
-    type    =   string
-    default =   ""
+    type        =   string
+    description = "Resto URL"
 }
 
 variable "PROMETHEUS_LOGIN" {
-    type    =   string
-    default =   ""
+    type        =   string
+    description = "Resto Login"
 }
 
 variable "PROMETHEUS_PASSWORD" {
+    type        =   string
+    description =   "Prometheus server password (if any)"
+}
+
+#AzureFunction
+variable "sku_tier" {
+    type        =   string
+    description = "Azure function SKU"
+}
+
+variable "sku_size" {
+    type        =   string
+    description = "Azure function SKU Size"
+}
+
+variable "functionapp_name" {
+    type        =   string
+    description = "Azure Function Name"
+}
+
+variable "appinsights_name" {
+    type        =   string
+    description = "Azure Application Insight Instance Name (connected with Azure Function)"
+}
+
+variable "storage_account_name" {
+    type        =   string
+    description = "Azure Storage Account Name (needed for the Azure Function)"
+}
+
+variable "storage_account_tier" {
     type    =   string
-    default =   ""
+    description = "Azure Storage Account Tier (needed for the Azure Function)"
 }
 
-
-# KeyVault
-variable "resource_group_name" {
-  type        = string
-  description = "RG name in Azure"
+variable "storage_account_replication_type" {
+    type    =   string
+    description = "Azure Storage Account Replication Type (needed for the Azure Function)"
 }
 
-variable "keyvault_location" {
-  type        = string
-  description = "RG location in Azure"
+variable "CLOUD_PLATFORM" {
+    type        =   string
+    description = "Cloud Platform env variable needed for the Azure Function Logic"
 }
 
-variable "keyvault_name" {
-  type        = string
-  description = "Key Vault name in Azure"
-}
-
-variable "secret_name" {
-  type        = string
-  description = "Key Vault Secret name in Azure"
-}
-
-variable "secret_value" {
-  type        = string
-  description = "Key Vault Secret value in Azure"
-  sensitive   = true
+variable "azure_func_name" {
+    type        =   string
+    description =   "Azure Func Name"
+    default     =   "blamelessprometheusfunc"
 }
