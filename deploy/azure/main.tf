@@ -1,74 +1,54 @@
-# https://github.com/terraform-providers/terraform-provider-azurerm/issues/7960
-provider "azurerm" {
-  version = ">=2.21.0"
-  features {}
+module "resourceGroup" {
+  source = "./resourceGroup"
+  resource_group_name               = var.resource_group_name
+  location                          = var.location
 }
 
-resource "azurerm_resource_group" "funcdeploy" {
-  name     = "rg-${var.prefix}-function"
-  location = var.location
+module "keyvault" {
+  source                            = "./keyvault"
+  resource_group_name               = module.resourceGroup.resource_group_name
+  location                          = var.location
+  keyvault_name                     = var.keyvault_name
+  PROMETHEUS_URL                    = var.PROMETHEUS_URL
+  RESTO_URL                         = var.RESTO_URL
+  PROMETHEUS_LOGIN                  = var.PROMETHEUS_LOGIN
+  PROMETHEUS_PASSWORD               = var.PROMETHEUS_PASSWORD
+} 
+
+module "function" {
+  source                            = "./function"
+  location                          = var.location
+  sku_tier                          = var.sku_tier
+  sku_size                          = var.sku_size
+  functionapp_name                  = var.functionapp_name
+  appinsights_name                  = var.appinsights_name
+  storage_account_name              = var.storage_account_name
+  storage_account_tier              = var.storage_account_tier
+  storage_account_replication_type  = var.storage_account_replication_type
+  azure_func_name                   = var.azure_func_name
+  CLOUD_PLATFORM                    = var.CLOUD_PLATFORM
+  PROMETHEUS_URL                    = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-URL)"
+  RESTO_URL                         = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/RESTO-URL)"
+  PROMETHEUS_LOGIN                  = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-LOGIN)"
+  PROMETHEUS_PASSWORD               = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-PASSWORD)"
+  resource_group_id                 = module.resourceGroup.resource_group_id
+  resource_group_name               = module.resourceGroup.resource_group_name
 }
 
-resource "azurerm_storage_account" "funcdeploy" {
-  name                     = "${var.prefix}storage"
-  resource_group_name      = azurerm_resource_group.funcdeploy.name
-  location                 = azurerm_resource_group.funcdeploy.location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
+module "keyvaultAccess" {
+  source                            = "./keyvaultAccess"
+  identity_id                       = module.function.identity_id
+  keyvault_id                       = module.keyvault.kv_id
 }
 
-resource "azurerm_storage_container" "funcdeploy" {
-  name                  = "contents"
-  storage_account_name  = azurerm_storage_account.funcdeploy.name
-  container_access_type = "private"
-}
-
-resource "azurerm_application_insights" "funcdeploy" {
-  name                = "${var.prefix}-appinsights"
-  location            = azurerm_resource_group.funcdeploy.location
-  resource_group_name = azurerm_resource_group.funcdeploy.name
-  application_type    = "web"
-
-  # https://github.com/terraform-providers/terraform-provider-azurerm/issues/1303
-  tags = {
-    "hidden-link:${azurerm_resource_group.funcdeploy.id}/providers/Microsoft.Web/sites/${var.prefix}func" = "Resource"
-  }
-
-}
-
-resource "azurerm_app_service_plan" "funcdeploy" {
-  name                = "${var.prefix}-functions-consumption-asp"
-  location            = azurerm_resource_group.funcdeploy.location
-  resource_group_name = azurerm_resource_group.funcdeploy.name
-  kind                = "FunctionApp"
-  reserved            = true
-
-  sku {
-    tier = "Dynamic"
-    size = "Y1"
-  }
-}
-
-resource "azurerm_function_app" "funcdeploy" {
-  name                       = "${var.prefix}func"
-  location                   = azurerm_resource_group.funcdeploy.location
-  resource_group_name        = azurerm_resource_group.funcdeploy.name
-  app_service_plan_id        = azurerm_app_service_plan.funcdeploy.id
-  storage_account_name       = azurerm_storage_account.funcdeploy.name
-  storage_account_access_key = azurerm_storage_account.funcdeploy.primary_access_key
-  https_only                 = true
-  version                    = "~3"
-  os_type                    = "linux"
-  app_settings = {
-      "WEBSITE_RUN_FROM_PACKAGE" = "1"
-      "FUNCTIONS_WORKER_RUNTIME" = "custom"
-      "APPINSIGHTS_INSTRUMENTATIONKEY" = "${azurerm_application_insights.funcdeploy.instrumentation_key}"
-      "APPLICATIONINSIGHTS_CONNECTION_STRING" = "InstrumentationKey=${azurerm_application_insights.funcdeploy.instrumentation_key};IngestionEndpoint=https://japaneast-0.in.applicationinsights.azure.com/"
-  }
-
-
-  # Enable if you need Managed Identity
-  identity {
-    type = "SystemAssigned"
-  }
+module "apiManagement" {
+  source                            = "./apiManagement"
+  location                          = var.location
+  resource_group_name               = module.resourceGroup.resource_group_name#var.resource_group_name
+  publisher_name                    = var.publisher_name
+  admin_email                       = var.admin_email
+  sku_name                          = var.sku_name
+  apimanagement_display_name        = var.apimanagement_display_name
+  azure_func_name                   = module.function.name#var.azure_func_name
+  apimanagement_name                = var.apimanagement_name
 }

@@ -21,3 +21,6 @@ local.settings.json
 *.exe
 main
 .vscode/*
+tfplan
+terraform-provider-*
+*.hcl

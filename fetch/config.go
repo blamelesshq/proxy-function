@@ -1,49 +1,50 @@
 package fetch
 
 import (
-	"encoding/base64"
 	"fmt"
 	"os"
-
-	"github.com/aws/aws-sdk-go/service/kms"
 )
 
-var isGCP = os.Getenv("IS_GCP")
+type Config struct {
+	PrometheusURL string `env:"PROMETHEUS_URL" required:"true"`
+	Login         string `env:"PROMETHEUS_LOGIN" required:"true"`
+	Password      string `env:"PROMETHEUS_PASSWORD" required:"true"`
+}
+
+var DefaultConfig = Config{}
+
+var cloudPlatform = os.Getenv("CLOUD_PLATFORM")
 
 func init() {
-	fmt.Println("starting init config")
-	if isGCP == "" {
+	if cloudPlatform == "" {
 		fmt.Println("init AWS config")
 		// use kms for encrypt aws variables
 		// InitAWSConfig()
-	} else {
+	} else if cloudPlatform == "AWS" {
 		fmt.Println("init GCP config")
 		// InitGCPConfig()
+	} else {
+		fmt.Println("init Azure config")
+		DefaultConfig.PrometheusURL = os.Getenv("PROMETHEUS_URL")
+		DefaultConfig.Password = os.Getenv("PROMETHEUS_PASSWORD")
+		DefaultConfig.Login = os.Getenv("PROMETHEUS_LOGIN")
 	}
 }
 
-// type Config struct {
-// 	PrometheusURL string `env:"PROMETHEUS_URL" required:"true"`
-// 	Login         string `env:"PROMETHEUS_LOGIN" required:"true"`
-// 	Password      string `env:"PROMETHEUS_PASSWORD" required:"true"`
+// func decrypt(k *kms.KMS, text string) (string, error) {
+// 	l, err := base64.StdEncoding.DecodeString(text)
+// 	if err != nil {
+// 		return "", fmt.Errorf("cannot decode string: %s", err)
+// 	}
+// 	input := &kms.DecryptInput{
+// 		CiphertextBlob: l,
+// 	}
+// 	response, err := k.Decrypt(input)
+// 	if err != nil {
+// 		return "", fmt.Errorf("cannot decrypt string: %s", err)
+// 	}
+// 	return string(response.Plaintext[:]), nil
 // }
-
-// var DefaultConfig = Config{}
-
-func decrypt(k *kms.KMS, text string) (string, error) {
-	l, err := base64.StdEncoding.DecodeString(text)
-	if err != nil {
-		return "", fmt.Errorf("cannot decode string: %s", err)
-	}
-	input := &kms.DecryptInput{
-		CiphertextBlob: l,
-	}
-	response, err := k.Decrypt(input)
-	if err != nil {
-		return "", fmt.Errorf("cannot decrypt string: %s", err)
-	}
-	return string(response.Plaintext[:]), nil
-}
 
 // InitAWSConfig init credentials for AWS KMS
 // func InitAWSConfig() {
