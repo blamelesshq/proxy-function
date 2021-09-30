@@ -44,11 +44,11 @@ module "keyvaultAccess" {
 module "apiManagement" {
   source                            = "./apiManagement"
   location                          = var.location
-  resource_group_name               = var.resource_group_name#module.resourceGroup.resource_group_name
+  resource_group_name               = module.resourceGroup.resource_group_name#var.resource_group_name
   publisher_name                    = var.publisher_name
   admin_email                       = var.admin_email
   sku_name                          = var.sku_name
   apimanagement_display_name        = var.apimanagement_display_name
-  azure_func_name                  = var.azure_func_name#var.module.function.name
+  azure_func_name                   = module.function.name#var.azure_func_name
   apimanagement_name                = var.apimanagement_name
 }
