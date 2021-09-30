@@ -1,43 +1,39 @@
 variable "location" {
     type    =   string
-    default =   "West Europe"
+    description = "Azure Region Location"
 }
 
-
-variable "resourceGroupName" {
+variable "resource_group_name" {
     type    =   string
-    description = "resourceGroupName"
+    description = "Azure Resource Group Name"
 }
 
-
-variable "collectionname" { 
+variable "apimanagement_name" {
     type    =   string
-    default = "someone-testing-apim" 
+    description = "Azure API Management name"
 }
 
-variable "publisherName" { 
-    type    =   string
-    default = "PublisherName" 
+variable "publisher_name" {
+    type = string
+    description = "Azure API Management Publisher Name"
 }
 
-variable "adminemail" {
+variable "admin_email" {
     type    =   string
     default = "admin@example.com" 
 }
 
-variable "skuName" {
+variable "sku_name" {
     type    =   string
     default = "Consumption_0"
 }
 
-variable "apiManagementName" {
+variable "apimanagement_display_name" {
     type    =   string
+    description = "Azure API Management display name"
 }
 
-variable "azureFunctionHostname" {
+variable "azure_func_name" {
     type    =   string
-}
-
-variable "azureFunctionName" {
-    type    =   string
+    description = "Azure Function Name"
 }

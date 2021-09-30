@@ -81,3 +81,31 @@ variable "azure_func_name" {
     description =   "Azure Func Name"
     default     =   "blamelessprometheusfunc"
 }
+
+
+# ApiManagement
+variable "apimanagement_name" {
+    type    =   string
+    description = "Azure API Management name"
+}
+
+variable "publisher_name" {
+    type = string
+    description = "Azure API Management Publisher Name"
+}
+
+variable "admin_email" {
+    type    =   string
+    description = "Azure API Management Admin Email"
+}
+
+variable "sku_name" {
+    type    =   string
+    description = "Azure API Management Sku Name"
+    default = "Consumption_0"
+}
+
+variable "apimanagement_display_name" {
+    type    =   string
+    description = "Azure API Management display name"
+}

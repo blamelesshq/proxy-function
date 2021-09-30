@@ -41,10 +41,14 @@ module "keyvaultAccess" {
   keyvault_id                       = module.keyvault.kv_id
 }
 
-# module "apiManagement" {
-#   source                            = "./apiManagement"
-#   resourceGroupName                 = var.resource_group_name#module.function.resourceGroup
-#   azureFunctionHostname             = "310920211func.azurewebsites.net"#module.function.hostname
-#   azureFunctionName                 = "310920211func"#module.function.name
-#   apiManagementName                 = var.apiManagementName
-# }
+module "apiManagement" {
+  source                            = "./apiManagement"
+  location                          = var.location
+  resource_group_name               = var.resource_group_name#module.resourceGroup.resource_group_name
+  publisher_name                    = var.publisher_name
+  admin_email                       = var.admin_email
+  sku_name                          = var.sku_name
+  apimanagement_display_name        = var.apimanagement_display_name
+  azure_func_name                  = var.azure_func_name#var.module.function.name
+  apimanagement_name                = var.apimanagement_name
+}

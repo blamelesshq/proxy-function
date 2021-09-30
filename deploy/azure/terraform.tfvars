@@ -21,4 +21,8 @@ CLOUD_PLATFORM                              = "Azure"
 azure_func_name                             = "blamelessprometheusfunc"
 
 #ApiManagement
-apiManagementName                           = "apiblameless35092021"
+apimanagement_name                          = "amblamelessprometheus"
+publisher_name                              = "Blameless"
+admin_email                                 = "admin@blameless.com"
+sku_name                                    = "Consumption_0"
+apimanagement_display_name                  = "Blameless"
