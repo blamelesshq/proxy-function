@@ -13,7 +13,7 @@ module "keyvault" {
   RESTO_URL                         = var.RESTO_URL
   PROMETHEUS_LOGIN                  = var.PROMETHEUS_LOGIN
   PROMETHEUS_PASSWORD               = var.PROMETHEUS_PASSWORD
-}
+} 
 
 module "function" {
   source                            = "./function"
