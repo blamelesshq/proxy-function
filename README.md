@@ -40,3 +40,8 @@ This repo contains two terraform script for AWS and GCP.
 #### AWS:
 1. Set API name. It will use as part of a path URL;
 2. Set region for deployment.
+
+#### Azure:
+1. Modify terraform.tfvars file with your values for Azure Resources and prometheus server url
+
+Azure terraform scripts are split into 4 modules for creation of the resources. Modules for ApiManagement, KeyVault and KeyVault access are optional. If not want to use them please comment them in the main.tf file in the main azure folder.
