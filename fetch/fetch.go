@@ -17,6 +17,8 @@ type Response struct {
 type Fetch struct {
 	Path   string
 	Search string
+	Start  string
+	End    string
 }
 
 type Result struct {
@@ -33,7 +35,23 @@ func contains(s []string, searchterm string) bool {
 	return false
 }
 
+func convertDateTimeToEpoch(s string) string {
+	fmt.Println("String123: " + s)
+	thetime, e := time.Parse(time.RFC3339, s+"+00:00") //"2021-10-06T13:01:33+00:00"
+
+	if e != nil {
+		panic("Can't parse time format")
+	}
+
+	epoch := thetime.Unix()
+
+	return fmt.Sprint(epoch)
+}
+
 func (f *Fetch) DoSplunk() (*Response, error) {
+
+	epochStart := convertDateTimeToEpoch(f.Start)
+	epochEnd := convertDateTimeToEpoch(f.End)
 
 	fmt.Println(f.Search)
 	parts := strings.Split(f.Search, "|")
@@ -53,7 +71,24 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		}, nil
 	}
 
-	payload := strings.NewReader("search=" + f.Search)
+	searchParts := strings.Split(f.Search, "|")
+	searchQuery := ""
+
+	for i, res := range searchParts {
+		if i == 0 {
+			searchQuery += res + " _indextime>=" + epochStart + " _indextime<" + epochEnd + "|"
+		} else {
+			if i+1 < len(searchParts) {
+				searchQuery += res + "|"
+			} else {
+				searchQuery += res
+			}
+		}
+	}
+
+	fmt.Println(searchQuery)
+
+	payload := strings.NewReader("search=" + searchQuery)
 
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPost, DefaultConfig.SplunkUrl, payload)
@@ -154,9 +189,21 @@ func NewFetch(values map[string]string) (*Fetch, error) {
 		return nil, fmt.Errorf("empty search for Splunk: %s", search)
 	}
 
+	start, ok := values["start"]
+	if !ok {
+		return nil, fmt.Errorf("empty start for Splunk: %s", search)
+	}
+
+	end, ok := values["end"]
+	if !ok {
+		return nil, fmt.Errorf("empty end for Splunk: %s", search)
+	}
+
 	return &Fetch{
 		Path:   path,
 		Search: search,
+		Start:  start,
+		End:    end,
 	}, nil
 }
 
