@@ -45,15 +45,17 @@ func convertDateTimeToEpoch(s string) string {
 
 	epoch := thetime.Unix()
 
+	// fmt.Println(epoch)
+
 	return fmt.Sprint(epoch)
 }
 
 func (f *Fetch) DoSplunk() (*Response, error) {
 
-	epochStart := convertDateTimeToEpoch(f.Start)
-	epochEnd := convertDateTimeToEpoch(f.End)
+	// epochStart := f.Start //convertDateTimeToEpoch(f.Start)
+	// epochEnd := f.End     //convertDateTimeToEpoch(f.End)
 
-	fmt.Println(f.Search)
+	// fmt.Println(f.Search)
 	parts := strings.Split(f.Search, "|")
 	sort.Strings(parts)
 	if !contains(parts, "fields") {
@@ -71,22 +73,24 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		}, nil
 	}
 
-	searchParts := strings.Split(f.Search, "|")
-	searchQuery := ""
+	// searchParts := strings.Split(f.Search, "|")
+	// searchQuery := ""
 
-	for i, res := range searchParts {
-		if i == 0 {
-			searchQuery += res + " _indextime>=" + epochStart + " _indextime<" + epochEnd + "|"
-		} else {
-			if i+1 < len(searchParts) {
-				searchQuery += res + "|"
-			} else {
-				searchQuery += res
-			}
-		}
-	}
+	// for i, res := range searchParts {
+	// 	if i == 0 {
+	// 		searchQuery += res + " _indextime>=" + epochStart + " _indextime<" + epochEnd + "|"
+	// 	} else {
+	// 		if i+1 < len(searchParts) {
+	// 			searchQuery += res + "|"
+	// 		} else {
+	// 			searchQuery += res
+	// 		}
+	// 	}
+	// }
 
-	fmt.Println(searchQuery)
+	searchQuery := f.Search
+
+	// fmt.Println(searchQuery)
 
 	payload := strings.NewReader("search=" + searchQuery)
 
@@ -111,13 +115,13 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	res := &map[string]interface{}{}
 	if err := json.NewDecoder(resp.Body).Decode(res); err != nil {
-		return nil, fmt.Errorf("cannot parse body from Splunk 11: %s", err)
+		return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
 	}
 
 	var sid Sid
 	b, err := json.Marshal(res)
 	if err != nil {
-		return nil, fmt.Errorf("cannot parse body from Prometheus 12: %s", err)
+		return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
 	}
 	json.Unmarshal([]byte(string(b)), &sid)
 
@@ -156,7 +160,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		var result Result
 		res12, _ := json.Marshal(res)
 		if err != nil {
-			return nil, fmt.Errorf("cannot parse body from Prometheus 12: %s", err)
+			return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
 		}
 		json.Unmarshal([]byte(string(res12)), &result)
 
@@ -184,7 +188,9 @@ func NewFetch(values map[string]string) (*Fetch, error) {
 		return nil, fmt.Errorf("empty path for Splunk: %s", path)
 	}
 
-	search, ok := values["search"]
+	path = "/services/search/jobs"
+
+	search, ok := values["query"] //values["search"]
 	if !ok {
 		return nil, fmt.Errorf("empty search for Splunk: %s", search)
 	}

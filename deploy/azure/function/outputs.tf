@@ -10,4 +10,6 @@ output "name" {
   value = azurerm_function_app.funcdeploy.name
 }
 
-
+output "functionapp_id" {
+  value = azurerm_function_app.funcdeploy.id
+}
