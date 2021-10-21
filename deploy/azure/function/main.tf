@@ -54,6 +54,7 @@ resource "azurerm_function_app" "funcdeploy" {
   https_only                 = true
   version                    = "~3"
   os_type                    = "linux"
+  # To see this - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/function_app#vnet_route_all_enabled 
   app_settings = {
       "WEBSITE_RUN_FROM_PACKAGE" = "1"
       "FUNCTIONS_WORKER_RUNTIME" = "custom"
