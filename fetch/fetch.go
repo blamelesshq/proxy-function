@@ -130,7 +130,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 	time.Sleep(1 * time.Second)
 
 	req1, err1 := http.NewRequest(http.MethodGet, DefaultConfig.SplunkUrl, nil)
-	req1.URL.RawQuery = "output_mode=json"
+	req1.URL.RawQuery = "output_mode=json&count=0"
 
 	req1.URL.Path = "/services/search/jobs/" + sid.Sid + "/results"
 	if err1 != nil {
