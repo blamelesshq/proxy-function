@@ -42,7 +42,12 @@ This repo contains two terraform script for AWS and GCP.
 2. Set region for deployment.
 
 #### Azure:
-1. Modify terraform.tfvars file with your values for Azure Resources and prometheus/splunk server url
+Prerequisites before deploying to Azure:
+* Have Azure Subscription
+* Installed [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli) on the machine (have to run [az login](https://docs.microsoft.com/en-us/cli/azure/authenticate-azure-cli) before continuing)
+* [Terraform cli](https://www.terraform.io/docs/cli/commands/index.html)
+* [Func Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=v3%2Clinux%2Ccsharp%2Cportal%2Cbash%2Ckeda) (optional) for deploying Azure Proxy Function to Azure Function App. Also [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli), or IDE extensions can be used for doing the same.
+
 
 Azure terraform scripts are split into 6 modules for creation of the resources.
 - [ResourceGroup](./deploy/azure/resourceGroup)
@@ -58,4 +63,17 @@ Azure terraform scripts are split into 6 modules for creation of the resources.
 - [NatGateway](./deploy/azure/natGateway) (optional)
  -> Multiple resources are created in this template. Main idea with this is for the Azure Function App to have only one outbound ip address and only that address to be whitelisted on the server (splunk/prometheus) side as an allowed address. Resources created: Virtual Network, Subnet, NatGateway, Virtual Network Connection to the Function App. This is optional since if not created there are multiple outbound address for the function app and all of them need to be whitelisted.
 
-All optional modules can be commented out from the [main](./deploy/main.tf) terraform file if not used
+All optional modules can be commented out from the [main](./deploy/azure/main.tf) terraform file if not used.
+
+[Terraform.tfvars](./deploy/azure/terraform.tfvars) file should store all values needed for [main](./deploy/main.tf) terraform script.
+
+In order to execute current terraform scripts you need to navigate to this "./deploy/azure/" directory and follow these steps by using Terraform CLI:
+1. terraform init (find more info [here](https://www.terraform.io/docs/cli/commands/init.html))
+2. terraform plan -out tfplan (find more info [here](https://www.terraform.io/docs/cli/commands/plan.html)), where tfplan is terraform plan name (can be anything)
+3. terraform apply tfplan (find more info [here](https://www.terraform.io/docs/cli/commands/apply.html))
+
+For more info about how to create Azure resources with terrafom go to this [page](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs).
+
+At the end when all terraform resources are created Azure Proxy Function should be deployed. One way of how to deploy Azure Function is to use Azure Function Core Tools. First, you need to navigate to your Azure Function Core directory and execute this command:
+```func azure functionapp publish <function-app-name>``` 
+where "function-app-name" (placeholder in the example) is the name of your function app. Prerequisite for doing this is to be logged in to your Azure Subscription using azure CLI.
