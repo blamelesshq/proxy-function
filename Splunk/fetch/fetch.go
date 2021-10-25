@@ -52,8 +52,8 @@ func convertDateTimeToEpoch(s string) string {
 
 func (f *Fetch) DoSplunk() (*Response, error) {
 
-	// epochStart := f.Start //convertDateTimeToEpoch(f.Start)
-	// epochEnd := f.End     //convertDateTimeToEpoch(f.End)
+	epochStart := f.Start //convertDateTimeToEpoch(f.Start)
+	epochEnd := f.End     //convertDateTimeToEpoch(f.End)
 
 	// fmt.Println(f.Search)
 	parts := strings.Split(f.Search, "|")
@@ -73,24 +73,33 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		}, nil
 	}
 
-	// searchParts := strings.Split(f.Search, "|")
-	// searchQuery := ""
+	searchParts := strings.Split(f.Search, "|")
+	searchQuery := ""
 
-	// for i, res := range searchParts {
-	// 	if i == 0 {
-	// 		searchQuery += res + " _indextime>=" + epochStart + " _indextime<" + epochEnd + "|"
-	// 	} else {
-	// 		if i+1 < len(searchParts) {
-	// 			searchQuery += res + "|"
-	// 		} else {
-	// 			searchQuery += res
-	// 		}
-	// 	}
-	// }
+	for i, res := range searchParts {
+		if i == 0 {
+			// fmt.Println("Res: " + res)
+			if strings.Contains(res, "_indextime>") && strings.Contains(res, "_indextime<") {
+				searchQuery += res + "|"
+			} else if strings.Contains(res, "_idextime>") && !strings.Contains(res, "_indextime<") {
+				searchQuery += res + " _indextime<" + epochEnd + "|"
+			} else if !strings.Contains(res, "_idextime>") && strings.Contains(res, "_indextime<") {
+				searchQuery += res + " _indextime>=" + epochStart + "|"
+			} else {
+				searchQuery += res + " _indextime>=" + epochStart + " _indextime<" + epochEnd + "|"
+			}
+		} else {
+			if i+1 < len(searchParts) {
+				searchQuery += res + "|"
+			} else {
+				searchQuery += res
+			}
+		}
+	}
 
-	searchQuery := f.Search
+	// searchQuery := f.Search
 
-	// fmt.Println(searchQuery)
+	fmt.Println(searchQuery)
 
 	payload := strings.NewReader("search=" + searchQuery)
 
