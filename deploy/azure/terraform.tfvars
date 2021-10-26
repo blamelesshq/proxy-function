@@ -1,4 +1,4 @@
-# General
+# General - Resource Group
 resource_group_name                         = "rg-blameless-prometheus-3"
 location                                    = "westeurope"
 
