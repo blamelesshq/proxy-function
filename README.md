@@ -204,33 +204,159 @@ name, location, resource_group_name, app_service_plan_id, storage_account_name, 
 
 Main terraform script is defined [here](./deploy/azure/function/main.tf), together with the [variables](./deploy/azure/function/variables.tf) and [outputs.tf](./deploy/azure/function/outputs.tf) - variables needed in the next terraform scripts (modules).
 
-3. Azure Key Vault
+3. Azure Key Vault (**OPTIONAL!**)
+[Azure Key Vault](https://docs.microsoft.com/en-us/azure/key-vault/general/basic-concepts) is key management store service in Azure. All sensitive secrets and certificates like connection strings, keys etc that are used in Azure should be stored in key vault. This service is easily integratable with Azure Functions by using [Key Vault references](https://docs.microsoft.com/en-us/azure/app-service/app-service-key-vault-references). Only thing that should be done is to grant access from your Azure Function App to KeyVault using system managed identity (see section ```identity {
+    type = "SystemAssigned"
+  }```  from Azure Functions part).
+  In order to create Azure Key Vault this main [terraform](./deploy/azure/keyvault/main.tf) script is used. All needed terraform required providers are defined in [providers](./deploy/azure/keyvault/providers.tf) file (see above explaination on what providers are). 
+  KeyVault terraform script has a few sections:
+  ```
+  resource "azurerm_key_vault" "keyvault" {
+  name                        = var.keyvault_name
+  location                    = var.location
+  resource_group_name         = var.resource_group_name
+  enabled_for_disk_encryption = false
+  tenant_id                   = data.azurerm_client_config.current.tenant_id
+  #soft_delete_enabled         = false
+  soft_delete_retention_days  = 7
+  purge_protection_enabled    = false
+
+  sku_name = "standard"
+
+  access_policy {
+    tenant_id = data.azurerm_client_config.current.tenant_id
+    object_id = data.azurerm_client_config.current.object_id
+
+    key_permissions = [
+      "get",
+    ]
+
+    secret_permissions = [
+      "get",
+      "list",
+      "set",
+      "delete"
+    ]
+
+    storage_permissions = [
+      "get",
+    ]
+  }
+  ```
+  ```name,location,resource_group_name``` properties are similar as in the Azure Function App script
+```enabled_for_disk_encryption``` - Boolean flag to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys
+```tenant_id``` - Azure Active directory tenant id. It gets it's value from the current signed in user. To sign in to your subscription this Azure CLI command should be used from the terminal: ```az login```
+```soft_delete_retention_days``` - The number of days that items should be retained for once soft-deleted. This value can be between 7 and 90 (the default) days.
+```purge_protection_enabled``` - Is Purge Protection enabled for this Key Vault? Defaults to false
+```sku_name``` - The Name of the SKU used for this Key Vault. Possible values are standard and premium
+```access_policy``` - This section is for setting proper access to the key vault secrets, storage and keys to the current signed in user
+
+Next section is for adding secrets in your key vault. For example:
+
+```
+resource "azurerm_key_vault_secret" "PROMETHEUS_URL" {
+  name         = "PROMETHEUS-URL"
+  value        = var.PROMETHEUS_URL
+  key_vault_id = azurerm_key_vault.keyvault.id
+}
+```
+
+This is for adding secret with name "PROMETHEUS-URL". The value for this secret is defined in [variables](./deploy/azure/keyvault/variables.tf) terraform file. This sample variable is for prometheus azure proxy function. If you need more values you just need to append those values in this terraform script.
+4. KeyVaultAccess (**OPTIONAL**. Required if KeyVault is defined)
+This terraform script is to add proper access to keyvault for the Azure Function App. As described in the KeyVault and Azure Function App section KeyVault can be directly integrated with Azure Function App using system managed identity. With this [terraform script](./deploy/azure/keyvaultAccess/main.tf) that is achieved with this section:
+```
+resource "azurerm_key_vault_access_policy" "keyvault" {
+  key_vault_id = var.keyvault_id
+  tenant_id    = data.azurerm_client_config.current.tenant_id
+  object_id    = var.identity_id
+
+  secret_permissions = [
+    "Get",
+    "List",
+  ]
+}
+```
+```key_vault_id``` - is the key vault identifier that 
+comes up as a variable (described in [variables.tf](./deploy/azure/keyvaultAccess/variables.tf))
+```object_id``` - is object identifier of the Azure Function App Managed Identity (described in [variables.tf](./deploy/azure/keyvaultAccess/variables.tf))
+```secret_permissions``` - Azure Function App will have only Get,List permission to the Azure KeyVault secrets.
+5. NatGateway (**OPTIONAL**)
+Multiple resources are created in this template. Main idea with this is for the Azure Function App to have only one outbound ip address and only that address to be whitelisted on the server (splunk/prometheus) side as an allowed address. Resources created: Virtual Network, Subnet, NatGateway, Virtual Network Connection to the Function App. This is optional since if not created there are multiple outbound address for the function app and all of them need to be whitelisted.
+Main terraform script can be find [here](./deploy/azure/natGateway/main.tf)
+6. Azure API Management (**OPTIONAL**)
+ApiManagement resource that will route traffic to single/multiple proxy function(s). Has single endpoint. It is not required since each proxy function(s) has/have endpoint.
+With the first section of the terraform script - 
+```
+resource "azurerm_api_management" "example" {
+  name                = var.apimanagement_name
+  resource_group_name = var.resource_group_name
+  location            = var.location
+  publisher_name      = var.publisher_name
+  publisher_email     = var.admin_email
+  sku_name            = var.sku_name
+}
+
+```
+Api Management resource is getting created. Similar to other resources variables are sent from the variables file. 
+- ```publisher_name,publisher_email``` can be anything.
+- ```sku_name``` - sku_name is a string consisting of two parts separated by an underscore(_). The first part is the name, valid values include: Consumption, Developer, Basic, Standard and Premium. The second part is the capacity (e.g. the number of deployed units of the sku), which must be a positive integer
+
+Second section of the script:
+```
+resource "azurerm_api_management_api" "example" {
+  name                = var.apimanagement_name
+  resource_group_name = var.resource_group_name
+  api_management_name = azurerm_api_management.example.name
+  revision            = "2"
+  display_name        = var.apimanagement_display_name
+  path                = ""
+  protocols           = ["https"]
+
+  import {
+    content_format = "openapi"
+    content_value  = file("api-spec.yml")
+  }
+}
+```
+It is for creating an API within Azure API Management service. To do this an openapi spec is predefined in this [file](./deploy/azure/api-spec.yml).
+With the last section:
+```
+resource "azurerm_api_management_api_policy" "example" {
+  api_name            = azurerm_api_management_api.example.name
+  api_management_name = azurerm_api_management_api.example.api_management_name
+  resource_group_name = var.resource_group_name
+
+  # Put any policy block here, has to beh XML :(
+  # More options: https://docs.microsoft.com/en-us/azure/api-management/api-management-policies
+  xml_content = <<XML
+    <policies>
+        <inbound>
+            <base />
+            <set-backend-service base-url="https://${var.azure_func_name}.azurewebsites.net/api/" />
+        </inbound>
+    </policies>
+  XML
+}
+```
+proper backend policy is getting created. This means that API Management will ping newly created Azure Function App in the backend and retrieve the response from there and return it.
+Main terraform script can be find [here](./deploy/azure/apiManagement.tf)
 
 
-(TO DO)
------------------------------------------------------
+**Conculsion:**
+These 6 terraform modules are all connected in one [main.tf](./deploy/azure/main.tf) terraform script. All variables for the main terraform script is defined in [variables.tf](./deploy/azure/variables.tf) file. Actual values for the variables can be finded in [terraform.tfvars](./deploy/azure/terraform.tfvars)
 
-Azure terraform scripts are split into 6 modules for creation of the resources.
-- [ApiManagement](./deploy/azure/apiManagement) (optional)
- -> ApiManagement resource that will route traffic to single/multiple proxy function(s). Has single endpoint. It is not required since each proxy function(s) has/have endpoint.
-- [KeyVault](./deploy/azure/keyvault) (optional)
- -> Secure key management service that is Azure Specific. All secrets needed for Azure Proxy Function(s) should be stored here (like ConnectionStrings, Passwords, Credentials). These secrets can be stored as an environment variables on Azure Function App as well which is why this is an optional resource
-- [KeyVaultAccess](./deploy/azure/keyvaultAccess) (optional)
- -> Access policy between keyvault and Azure Function App. If KeyVault is not created than this is optional
-- [NatGateway](./deploy/azure/natGateway) (optional)
- -> Multiple resources are created in this template. Main idea with this is for the Azure Function App to have only one outbound ip address and only that address to be whitelisted on the server (splunk/prometheus) side as an allowed address. Resources created: Virtual Network, Subnet, NatGateway, Virtual Network Connection to the Function App. This is optional since if not created there are multiple outbound address for the function app and all of them need to be whitelisted.
 
-All optional modules can be commented out from the [main](./deploy/azure/main.tf) terraform file if not used.
-
-[Terraform.tfvars](./deploy/azure/terraform.tfvars) file should store all values needed for [main](./deploy/main.tf) terraform script.
-
-In order to execute current terraform scripts you need to navigate to this "./deploy/azure/" directory and follow these steps by using Terraform CLI:
+In order to execute current terraform scripts you need to navigate to this "./deploy/azure/" directory via terminal and follow these steps by using Terraform CLI:
 1. terraform init (find more info [here](https://www.terraform.io/docs/cli/commands/init.html))
 2. terraform plan -out tfplan (find more info [here](https://www.terraform.io/docs/cli/commands/plan.html)), where tfplan is terraform plan name (can be anything)
 3. terraform apply tfplan (find more info [here](https://www.terraform.io/docs/cli/commands/apply.html))
 
 For more info about how to create Azure resources with terrafom go to this [page](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs).
 
-At the end when all terraform resources are created Azure Proxy Function should be deployed. One way of how to deploy Azure Function is to use Azure Function Core Tools. First, you need to navigate to your Azure Function Core directory and execute this command:
+At the end when all terraform resources are created Azure Proxy Function should be deployed. One way of how to deploy Azure Function is to use Azure Function Core Tools. First, you need to navigate to your Azure Function directory (in our example if it is Splunk it's under './Splunk' directory) and execute this command:
 ```func azure functionapp publish <function-app-name>``` 
 where "function-app-name" (placeholder in the example) is the name of your function app. Prerequisite for doing this is to be logged in to your Azure Subscription using azure CLI.
+
+If everything wents ok then the these Azure resources should be created:
+![alt text](./StaticFiles/AzureResources.png)
+In this example the names as shown including "blameless prometheus" words but that can be anything based on the values inserted in .tfvars config file.
