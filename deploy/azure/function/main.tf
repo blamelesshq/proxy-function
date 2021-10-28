@@ -59,11 +59,13 @@ resource "azurerm_function_app" "funcdeploy" {
       "WEBSITE_RUN_FROM_PACKAGE" = "1"
       "FUNCTIONS_WORKER_RUNTIME" = "custom"
       "APPINSIGHTS_INSTRUMENTATIONKEY" = "${azurerm_application_insights.funcdeploy.instrumentation_key}"
-      "CLOUD_PLATFORM" = "${var.CLOUD_PLATFORM}"
-      "PROMETHEUS_PASSWORD" = "${var.PROMETHEUS_PASSWORD}"
-      "PROMETHEUS_LOGIN" = "${var.PROMETHEUS_LOGIN}"
-      "RESTO_URL" = "${var.RESTO_URL}"
-      "PROMETHEUS_URL" = "${var.PROMETHEUS_URL}"
+      "SPLUNK_URL" = "${var.SPLUNK_URL}"
+      "SPLUNK_ACCESS_TOKEN" = "${var.SPLUNK_ACCESS_TOKEN}"
+      # "CLOUD_PLATFORM" = "${var.CLOUD_PLATFORM}"
+      # "PROMETHEUS_PASSWORD" = "${var.PROMETHEUS_PASSWORD}"
+      # "PROMETHEUS_LOGIN" = "${var.PROMETHEUS_LOGIN}"
+      # "RESTO_URL" = "${var.RESTO_URL}"
+      # "PROMETHEUS_URL" = "${var.PROMETHEUS_URL}"
   }
 
 

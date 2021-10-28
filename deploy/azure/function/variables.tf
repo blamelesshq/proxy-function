@@ -57,29 +57,39 @@ variable "CLOUD_PLATFORM" {
     default     =   "Azure"
 }
 
-variable "PROMETHEUS_URL" {
+variable "SPLUNK_URL" {
     type        = string
-    description = "Prometheus Server URL Configuration"
-    default     = "http://prometheus23092021.westeurope.azurecontainer.io:9090/"
+    description = "SPLUNK_URL"
 }
 
-variable "RESTO_URL" {
-    type        =   string
-    description = "Resto URL"
-    default     =   ""
+variable "SPLUNK_ACCESS_TOKEN" {
+    type        = string
+    description = "SPLUNK_ACCESS_TOKEN"
 }
 
-variable "PROMETHEUS_LOGIN" {
-    type        =   string
-    description = "Resto Login"
-    default     =   ""
-}
+# variable "PROMETHEUS_URL" {
+#     type        = string
+#     description = "Prometheus Server URL Configuration"
+#     default     = "http://prometheus23092021.westeurope.azurecontainer.io:9090/"
+# }
 
-variable "PROMETHEUS_PASSWORD" {
-    type        =   string
-    description =   "Prometheus server password (if any)"
-    default     =   ""
-}
+# variable "RESTO_URL" {
+#     type        =   string
+#     description = "Resto URL"
+#     default     =   ""
+# }
+
+# variable "PROMETHEUS_LOGIN" {
+#     type        =   string
+#     description = "Resto Login"
+#     default     =   ""
+# }
+
+# variable "PROMETHEUS_PASSWORD" {
+#     type        =   string
+#     description =   "Prometheus server password (if any)"
+#     default     =   ""
+# }
 
 variable "azure_func_name" {
     type        =   string

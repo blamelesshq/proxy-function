@@ -348,10 +348,23 @@ These 6 terraform modules are all connected in one [main.tf](./deploy/azure/main
 
 In order to execute current terraform scripts you need to navigate to this "./deploy/azure/" directory via terminal and follow these steps by using Terraform CLI:
 1. terraform init (find more info [here](https://www.terraform.io/docs/cli/commands/init.html))
+
+**Example:**
+![alt text](./StaticFiles/terraformInit.png)
+
 2. terraform plan -out tfplan (find more info [here](https://www.terraform.io/docs/cli/commands/plan.html)), where tfplan is terraform plan name (can be anything)
-3. terraform apply tfplan (find more info [here](https://www.terraform.io/docs/cli/commands/apply.html))
+
+**Example:**
+![alt text](./StaticFiles/terraformPlan.png)
+
+3. terraform apply tfplan --var-file="terraform.tfvars" (find more info [here](https://www.terraform.io/docs/cli/commands/apply.html))
+
+**Example:**
+![alt text](./StaticFiles/terraformApply.png)
 
 For more info about how to create Azure resources with terrafom go to this [page](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs).
+
+
 
 At the end when all terraform resources are created Azure Proxy Function should be deployed. One way of how to deploy Azure Function is to use Azure Function Core Tools. First, you need to navigate to your Azure Function directory (in our example if it is Splunk it's under './Splunk' directory) and execute this command:
 ```func azure functionapp publish <function-app-name>``` 

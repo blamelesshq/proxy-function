@@ -9,10 +9,12 @@ module "keyvault" {
   resource_group_name               = module.resourceGroup.resource_group_name
   location                          = var.location
   keyvault_name                     = var.keyvault_name
-  PROMETHEUS_URL                    = var.PROMETHEUS_URL
-  RESTO_URL                         = var.RESTO_URL
-  PROMETHEUS_LOGIN                  = var.PROMETHEUS_LOGIN
-  PROMETHEUS_PASSWORD               = var.PROMETHEUS_PASSWORD
+  SPLUNK_URL                        = var.SPLUNK_URL
+  SPLUNK_ACCESS_TOKEN               = var.SPLUNK_ACCESS_TOKEN
+  # PROMETHEUS_URL                    = var.PROMETHEUS_URL
+  # RESTO_URL                         = var.RESTO_URL
+  # PROMETHEUS_LOGIN                  = var.PROMETHEUS_LOGIN
+  # PROMETHEUS_PASSWORD               = var.PROMETHEUS_PASSWORD
 } 
 
 module "function" {
@@ -27,10 +29,12 @@ module "function" {
   storage_account_replication_type  = var.storage_account_replication_type
   azure_func_name                   = var.azure_func_name
   CLOUD_PLATFORM                    = var.CLOUD_PLATFORM
-  PROMETHEUS_URL                    = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-URL)"
-  RESTO_URL                         = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/RESTO-URL)"
-  PROMETHEUS_LOGIN                  = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-LOGIN)"
-  PROMETHEUS_PASSWORD               = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-PASSWORD)"
+  SPLUNK_URL                        = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/SPLUNK-URL)"
+  SPLUNK_ACCESS_TOKEN               = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/SPLUNK-ACCESS-TOKEN)"
+  # PROMETHEUS_URL                    = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-URL)"
+  # RESTO_URL                         = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/RESTO-URL)"
+  # PROMETHEUS_LOGIN                  = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-LOGIN)"
+  # PROMETHEUS_PASSWORD               = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-PASSWORD)"
   resource_group_id                 = module.resourceGroup.resource_group_id
   resource_group_name               = module.resourceGroup.resource_group_name
 }

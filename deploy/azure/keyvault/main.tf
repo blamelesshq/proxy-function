@@ -39,29 +39,41 @@ resource "azurerm_key_vault" "keyvault" {
   # }
 }
 
-resource "azurerm_key_vault_secret" "PROMETHEUS_URL" {
-  name         = "PROMETHEUS-URL"
-  value        = var.PROMETHEUS_URL
+resource "azurerm_key_vault_secret" "SPLUNK_URL" {
+  name         = "SPLUNK-URL"
+  value        = var.SPLUNK_URL
   key_vault_id = azurerm_key_vault.keyvault.id
 }
 
-resource "azurerm_key_vault_secret" "RESTO_URL" {
-  name         = "RESTO-URL"
-  value        = var.RESTO_URL
+resource "azurerm_key_vault_secret" "SPLUNK_ACCESS_TOKEN" {
+  name         = "SPLUNK-ACCESS-TOKEN"
+  value        = var.SPLUNK_ACCESS_TOKEN
   key_vault_id = azurerm_key_vault.keyvault.id
 }
 
-resource "azurerm_key_vault_secret" "PROMETHEUS_LOGIN" {
-  name         = "PROMETHEUS-LOGIN"
-  value        = var.PROMETHEUS_LOGIN
-  key_vault_id = azurerm_key_vault.keyvault.id
-}
+# resource "azurerm_key_vault_secret" "PROMETHEUS_URL" {
+#   name         = "PROMETHEUS-URL"
+#   value        = var.PROMETHEUS_URL
+#   key_vault_id = azurerm_key_vault.keyvault.id
+# }
 
-resource "azurerm_key_vault_secret" "PROMETHEUS_PASSWORD" {
-  name         = "PROMETHEUS-PASSWORD"
-  value        = var.PROMETHEUS_PASSWORD
-  key_vault_id = azurerm_key_vault.keyvault.id
-}
+# resource "azurerm_key_vault_secret" "RESTO_URL" {
+#   name         = "RESTO-URL"
+#   value        = var.RESTO_URL
+#   key_vault_id = azurerm_key_vault.keyvault.id
+# }
+
+# resource "azurerm_key_vault_secret" "PROMETHEUS_LOGIN" {
+#   name         = "PROMETHEUS-LOGIN"
+#   value        = var.PROMETHEUS_LOGIN
+#   key_vault_id = azurerm_key_vault.keyvault.id
+# }
+
+# resource "azurerm_key_vault_secret" "PROMETHEUS_PASSWORD" {
+#   name         = "PROMETHEUS-PASSWORD"
+#   value        = var.PROMETHEUS_PASSWORD
+#   key_vault_id = azurerm_key_vault.keyvault.id
+# }
 
 # resource "azurerm_key_vault_access_policy" "policy" {
 #   key_vault_id = azurerm_key_vault.keyvault.id

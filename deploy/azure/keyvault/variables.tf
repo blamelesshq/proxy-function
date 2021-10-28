@@ -13,22 +13,32 @@ variable "keyvault_name" {
   description = "Key Vault name in Azure"
 }
 
-variable "PROMETHEUS_URL" {
+variable "SPLUNK_URL" {
   type        = string
-  description = "PROMETHEUS_URL"
+  description = "SPLUNK_URL"
 }
 
-variable "RESTO_URL" {
+variable "SPLUNK_ACCESS_TOKEN" {
   type        = string
-  description = "RESTO_URL"
+  description = "SPLUNK_ACCESS_TOKEN"
 }
 
-variable "PROMETHEUS_LOGIN" {
-  type        = string
-  description = "PROMETHEUS_LOGIN"
-}
+# variable "PROMETHEUS_URL" {
+#   type        = string
+#   description = "PROMETHEUS_URL"
+# }
 
-variable "PROMETHEUS_PASSWORD" {
-  type        = string
-  description = "PROMETHEUS_PASSWORD"
-}
+# variable "RESTO_URL" {
+#   type        = string
+#   description = "RESTO_URL"
+# }
+
+# variable "PROMETHEUS_LOGIN" {
+#   type        = string
+#   description = "PROMETHEUS_LOGIN"
+# }
+
+# variable "PROMETHEUS_PASSWORD" {
+#   type        = string
+#   description = "PROMETHEUS_PASSWORD"
+# }

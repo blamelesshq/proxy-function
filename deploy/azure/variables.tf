@@ -15,25 +15,35 @@ variable "keyvault_name" {
   description = "Key Vault Name in Azure"
 }
 
-variable "PROMETHEUS_URL" {
+variable "SPLUNK_URL" {
     type        =   string
-    description = "Prometheus Server URL Configuration"
+    description = "SPLUNK_URL"
 }
 
-variable "RESTO_URL" {
+variable "SPLUNK_ACCESS_TOKEN" {
     type        =   string
-    description = "Resto URL"
+    description = "SPLUNK_ACCESS_TOKEN"
 }
 
-variable "PROMETHEUS_LOGIN" {
-    type        =   string
-    description = "Resto Login"
-}
+# variable "PROMETHEUS_URL" {
+#     type        =   string
+#     description = "Prometheus Server URL Configuration"
+# }
 
-variable "PROMETHEUS_PASSWORD" {
-    type        =   string
-    description =   "Prometheus server password (if any)"
-}
+# variable "RESTO_URL" {
+#     type        =   string
+#     description = "Resto URL"
+# }
+
+# variable "PROMETHEUS_LOGIN" {
+#     type        =   string
+#     description = "Resto Login"
+# }
+
+# variable "PROMETHEUS_PASSWORD" {
+#     type        =   string
+#     description =   "Prometheus server password (if any)"
+# }
 
 #AzureFunction
 variable "sku_tier" {
