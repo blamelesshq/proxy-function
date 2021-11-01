@@ -228,6 +228,12 @@ Go to the /Splunk directory
 $ cd ./Splunk
 ```
 
+Compile the main.go function (Linux):
+
+```shell
+$ env GOOS=linux GOARCH=amd64 go build main.go
+```
+
 Deploy the Blameless proxy function
 
 ```shell
@@ -242,6 +248,12 @@ Go to the /Prometheus directory
 
 ```shell
 $ cd ./Prometheus
+```
+
+Compile the main.go function (Linux):
+
+```shell
+$ env GOOS=linux GOARCH=amd64 go build main.go
 ```
 
 Deploy the Blameless proxy function
