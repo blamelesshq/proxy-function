@@ -39,6 +39,11 @@ module "function" {
   resource_group_name               = module.resourceGroup.resource_group_name
 }
 
+module "functionDeploy" {
+  source          = "./functionDeploy"
+  azure_func_name = module.function.functionapp_name
+}
+
 module "keyvaultAccess" {
   source                            = "./keyvaultAccess"
   identity_id                       = module.function.identity_id
@@ -57,14 +62,14 @@ module "apiManagement" {
   apimanagement_name                = var.apimanagement_name
 }
 
-module "natGateway" {
-  source                 = "./natGateway"
-  location               = var.location
-  resource_group_name    = module.resourceGroup.resource_group_name#var.resource_group_name
-  natGateway_name        = "nat-${var.functionapp_name}"
-  vnet_name              = "vnet-${var.functionapp_name}"
-  subnet_name            = "subnet-${var.functionapp_name}"
-  public_ip_name         = "ip-${var.functionapp_name}"
-  subnet_delegation_name = "snetdel-${var.functionapp_name}"
-  app_service_id         = module.function.functionapp_id
-}
+# module "natGateway" {
+#   source                 = "./natGateway"
+#   location               = var.location
+#   resource_group_name    = module.resourceGroup.resource_group_name#var.resource_group_name
+#   natGateway_name        = "nat-${var.functionapp_name}"
+#   vnet_name              = "vnet-${var.functionapp_name}"
+#   subnet_name            = "subnet-${var.functionapp_name}"
+#   public_ip_name         = "ip-${var.functionapp_name}"
+#   subnet_delegation_name = "snetdel-${var.functionapp_name}"
+#   app_service_id         = module.function.functionapp_id
+# }

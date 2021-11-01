@@ -1,10 +1,10 @@
 openapi: 3.0.1
 info:
   title: 340920211func
-  description: Import from "310920211func" Function App
+  description: Import from <yourFunctionApp> Function App
   version: '1.0'
 servers:
-  - url: https://310920211func.azurewebsites.net/api
+  - url: https://yourBaseUrl.azurewebsites.net/api
 paths:
   /fetch:
     get:
@@ -12,7 +12,14 @@ paths:
       operationId: get-fetch
       responses:
         '200':
-          description: 
+          description: test
+  /fetch2:
+    get:
+      summary: fetch
+      operationId: get-fetch2
+      responses:
+        '200':
+          description: test
 components:
   securitySchemes:
     apiKeyHeader:
