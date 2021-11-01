@@ -45,9 +45,9 @@ Go to the deployment guide corresponding to the public cloud provider where you 
 
 | Cloud Provider | Guide                                                        |
 | -------------- | ------------------------------------------------------------ |
-| AWS            | Deploying the Blameless proxy function in AWS (under revision) |
-| GCP            | Deploying the Blameless proxy function in GCP (under revision) |
-| Azure          | [Deploying the Blameless proxy function in Azure](https://github.com/blamelesshq/proxy-function/blob/master/docs/AZURE-GUIDE.md) |
+| AWS            | Deploying the Blameless proxy function to AWS (under construction) |
+| GCP            | Deploying the Blameless proxy function to GCP (under construction) |
+| Azure          | [Deploying the Blameless proxy function to Azure](https://github.com/blamelesshq/proxy-function/blob/master/docs/AZURE-GUIDE.md) |
 
 
 
