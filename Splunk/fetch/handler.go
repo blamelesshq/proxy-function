@@ -1,19 +1,20 @@
 package fetch
 
 import (
-	"context"
 	"encoding/json"
 	"net/http"
-
-	"github.com/aws/aws-lambda-go/events"
 )
+
+type Sid struct {
+	Sid string
+}
 
 func ProcessFetch(params map[string]string) (int, string) {
 	fetch, err := NewFetch(params)
 	if err != nil {
 		return http.StatusBadRequest, err.Error()
 	}
-	resp, err := fetch.Do()
+	resp, err := fetch.DoSplunk()
 	if err != nil {
 		return http.StatusInternalServerError, err.Error()
 	}
@@ -24,8 +25,7 @@ func ProcessFetch(params map[string]string) (int, string) {
 	return resp.StatusCode, string(b)
 }
 
-// HandleRequestGCP handler for GCP functions
-func HandleRequestGCP(w http.ResponseWriter, r *http.Request) {
+func HandleRequestAzure(w http.ResponseWriter, r *http.Request) {
 	// prepare params from a query string for fetch
 	params := map[string]string{}
 	for k, v := range r.URL.Query() {
@@ -35,13 +35,4 @@ func HandleRequestGCP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write([]byte(body))
-}
-
-// HandleRequestAWS handler for AWS lambda function
-func HandleRequestAWS(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
-	code, body := ProcessFetch(request.QueryStringParameters)
-	return &events.APIGatewayProxyResponse{
-		StatusCode: code,
-		Body:       body,
-	}, nil
 }

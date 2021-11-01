@@ -1,0 +1,28 @@
+openapi: 3.0.1
+info:
+  title: 340920211func
+  description: Import from "310920211func" Function App
+  version: '1.0'
+servers:
+  - url: https://310920211func.azurewebsites.net/api
+paths:
+  /fetch:
+    get:
+      summary: fetch
+      operationId: get-fetch
+      responses:
+        '200':
+          description: 
+components:
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: Ocp-Apim-Subscription-Key
+      in: header
+    apiKeyQuery:
+      type: apiKey
+      name: subscription-key
+      in: query
+security:
+  - apiKeyHeader: [ ]
+  - apiKeyQuery: [ ]
