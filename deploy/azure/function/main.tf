@@ -57,6 +57,7 @@ resource "azurerm_function_app" "funcdeploy" {
   # To see this - https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/function_app#vnet_route_all_enabled 
   app_settings = {
       "WEBSITE_RUN_FROM_PACKAGE" = "1"
+      "WEBSITE_VNET_ROUTE_ALL"   = "1"
       "FUNCTIONS_WORKER_RUNTIME" = "custom"
       "APPINSIGHTS_INSTRUMENTATIONKEY" = "${azurerm_application_insights.funcdeploy.instrumentation_key}"
       "SPLUNK_URL" = "${var.SPLUNK_URL}"
