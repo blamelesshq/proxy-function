@@ -31,6 +31,9 @@ func HandleRequestAzure(w http.ResponseWriter, r *http.Request) {
 	for k, v := range r.URL.Query() {
 		params[k] = v[0]
 	}
+
+	params["path"] = r.URL.Path
+
 	code, body := ProcessFetch(params)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)

@@ -1,9 +1,9 @@
 # General - Resource Group
-resource_group_name                         = "rg-blameless-splunk-28"
+resource_group_name                         = "rg-blameless-splunk-02111"
 location                                    = "westeurope"
 
 # KeyVault
-keyvault_name                               = "kv-blameless-splunk28"
+keyvault_name                               = "kv-blameless-splunk02111"
 #PROMETHEUS_URL                              = "http://prometheus18102021.westeurope.azurecontainer.io:9090/"
 #RESTO_URL                                   = ""
 #PROMETHEUS_LOGIN                            = ""
@@ -14,16 +14,16 @@ SPLUNK_ACCESS_TOKEN                          = "eyJraWQiOiJzcGx1bmsuc2VjcmV0Iiwi
 #AzureFunction
 sku_tier                                    = "Standard"
 sku_size                                    = "S1"
-functionapp_name                            = "fa-blameless-splunk28"
-appinsights_name                            = "ai-blameless-splunk28"
-storage_account_name                        = "stblamelesssplunk28"
+functionapp_name                            = "fa-blameless-splunk02111"
+appinsights_name                            = "ai-blameless-splunk02111"
+storage_account_name                        = "stblamelesssplunk012111"
 storage_account_tier                        = "Standard"
 storage_account_replication_type            = "LRS"
 CLOUD_PLATFORM                              = "Azure"
-azure_func_name                             = "blamelesssplunk28"
+azure_func_name                             = "blamelesssplunk012111"
 
 #ApiManagement
-apimanagement_name                          = "amblamelesssplunk28"
+apimanagement_name                          = "amblamelesssplunk012111"
 publisher_name                              = "Blameless"
 admin_email                                 = "admin@blameless.com"
 sku_name                                    = "Consumption_0"

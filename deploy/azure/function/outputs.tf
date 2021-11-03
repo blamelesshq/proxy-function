@@ -13,3 +13,7 @@ output "name" {
 output "functionapp_id" {
   value = azurerm_function_app.funcdeploy.id
 }
+
+output "functionapp_name" {
+  value = azurerm_function_app.funcdeploy.name
+}

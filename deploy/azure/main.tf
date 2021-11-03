@@ -39,6 +39,11 @@ module "function" {
   resource_group_name               = module.resourceGroup.resource_group_name
 }
 
+module "functionDeploy" {
+  source          = "./functionDeploy"
+  azure_func_name = module.function.functionapp_name
+}
+
 module "keyvaultAccess" {
   source                            = "./keyvaultAccess"
   identity_id                       = module.function.identity_id
