@@ -4,10 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"sort"
 	"strings"
 	"time"
+
+	. "github.com/ahmetb/go-linq/v3"
 )
+
+type FunctionObj struct {
+	Route             string
+	SplunkUrl         string
+	SplunkAccessToken string
+}
+
+type RouteConfigObj struct {
+	Functions []FunctionObj
+}
 
 type Response struct {
 	StatusCode int
@@ -15,10 +28,12 @@ type Response struct {
 }
 
 type Fetch struct {
-	Path   string
-	Search string
-	Start  string
-	End    string
+	Path              string
+	Search            string
+	Start             string
+	End               string
+	SplunkUrl         string
+	SplunkAccessToken string
 }
 
 type Result struct {
@@ -104,7 +119,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 	payload := strings.NewReader("search=" + searchQuery)
 
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPost, DefaultConfig.SplunkUrl, payload)
+	req, err := http.NewRequest(http.MethodPost, f.SplunkUrl, payload)
 	req.URL.RawQuery = "output_mode=json"
 
 	req.URL.Path = f.Path
@@ -113,7 +128,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		fmt.Println(err)
 		return nil, fmt.Errorf("cannot make request to Splunk: %s", err)
 	}
-	req.Header.Add("Authorization", "Bearer "+DefaultConfig.SplunkAccessToken)
+	req.Header.Add("Authorization", "Bearer "+f.SplunkAccessToken)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := client.Do(req)
@@ -138,7 +153,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	time.Sleep(1 * time.Second)
 
-	req1, err1 := http.NewRequest(http.MethodGet, DefaultConfig.SplunkUrl, nil)
+	req1, err1 := http.NewRequest(http.MethodGet, f.SplunkUrl, nil)
 	req1.URL.RawQuery = "output_mode=json&count=0"
 
 	req1.URL.Path = "/services/search/jobs/" + sid.Sid + "/results"
@@ -146,7 +161,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		return nil, fmt.Errorf("cannot create Splunk request: %s", err)
 	}
 
-	req1.Header.Add("Authorization", "Bearer "+DefaultConfig.SplunkAccessToken)
+	req1.Header.Add("Authorization", "Bearer "+f.SplunkAccessToken)
 
 	client1 := &http.Client{}
 	resp1, err1 := client1.Do(req1)
@@ -192,6 +207,11 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 }
 
 func NewFetch(values map[string]string) (*Fetch, error) {
+	apiPath, ok := values["path"]
+	if !ok {
+		return nil, fmt.Errorf("empty path for ApiPath: %s", apiPath)
+	}
+
 	path, ok := values["api_path"]
 	if !ok {
 		return nil, fmt.Errorf("empty path for Splunk: %s", path)
@@ -214,11 +234,44 @@ func NewFetch(values map[string]string) (*Fetch, error) {
 		return nil, fmt.Errorf("empty end for Splunk: %s", search)
 	}
 
+	var routeConfigObj RouteConfigObj
+
+	err := json.Unmarshal([]byte(os.Getenv("RouteConfig")), &routeConfigObj)
+
+	if err != nil {
+
+		// if error is not nil
+		// print error
+		fmt.Println(err)
+	}
+
+	var splunkUrl = From(routeConfigObj.Functions).Where(func(c interface{}) bool {
+		fmt.Println("Route: " + c.(FunctionObj).Route)
+		return c.(FunctionObj).Route == "/api/fetch"
+	}).Select(func(c interface{}) interface{} {
+		fmt.Print(c.(FunctionObj).SplunkUrl)
+		return c.(FunctionObj).SplunkUrl
+	}).First()
+
+	splunkUrlRes := fmt.Sprintf("%v", splunkUrl)
+
+	var splunkAccessToken = From(routeConfigObj.Functions).Where(func(c interface{}) bool {
+		fmt.Println("Route: " + c.(FunctionObj).Route)
+		return c.(FunctionObj).Route == "/api/fetch"
+	}).Select(func(c interface{}) interface{} {
+		fmt.Print(c.(FunctionObj).SplunkUrl)
+		return c.(FunctionObj).SplunkAccessToken
+	}).First()
+
+	splunkAccessTokenRes := fmt.Sprintf("%v", splunkAccessToken)
+
 	return &Fetch{
-		Path:   path,
-		Search: search,
-		Start:  start,
-		End:    end,
+		Path:              path,
+		Search:            search,
+		Start:             start,
+		End:               end,
+		SplunkUrl:         splunkUrlRes,
+		SplunkAccessToken: splunkAccessTokenRes,
 	}, nil
 }
 
