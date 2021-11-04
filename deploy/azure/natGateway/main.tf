@@ -1,7 +1,4 @@
-provider "azurerm" {
-  version = "=2.47.0"
-  features {}
-}
+data "azurerm_client_config" "current" {}
 
 resource "azurerm_virtual_network" "example" {
   name                = var.vnet_name
@@ -33,7 +30,7 @@ resource "azurerm_public_ip" "example" {
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
-  zones               = ["1"]
+  availability_zone   = "Zone-Redundant"
 }
 
 resource "azurerm_public_ip_prefix" "example" {
@@ -41,17 +38,21 @@ resource "azurerm_public_ip_prefix" "example" {
   location            = var.location
   resource_group_name = var.resource_group_name
   prefix_length       = 30
-  zones               = ["1"]
+  availability_zone   = "Zone-Redundant"
 }
 
 resource "azurerm_nat_gateway" "example" {
   name                    = var.natGateway_name
   location                = var.location
   resource_group_name     = var.resource_group_name
-  public_ip_prefix_ids    = [azurerm_public_ip_prefix.example.id]
   sku_name                = "Standard"
   idle_timeout_in_minutes = 10
   zones                   = ["1"]
+}
+
+resource "azurerm_nat_gateway_public_ip_prefix_association" "example" {
+  nat_gateway_id      = azurerm_nat_gateway.example.id
+  public_ip_prefix_id = azurerm_public_ip_prefix.example.id
 }
 
 resource "azurerm_nat_gateway_public_ip_association" "example" {
