@@ -1,9 +1,4 @@
-provider "azurerm" {
-    // Credentials should be set, az login is the easiest
-    // other options are described here: https://www.terraform.io/docs/providers/azurerm/index.html
-    version = "=2.47.0"
-    features {}
-}
+data "azurerm_client_config" "current" {}
 
 resource "azurerm_api_management" "example" {
   name                = var.apimanagement_name

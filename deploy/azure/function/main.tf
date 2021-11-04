@@ -1,8 +1,4 @@
-# https://github.com/terraform-providers/terraform-provider-azurerm/issues/7960
-provider "azurerm" {
-  version = "=2.47.0"
-  features {}
-}
+data "azurerm_client_config" "current" {}
 
 resource "azurerm_storage_account" "funcdeploy" {
   name                     = var.storage_account_name
