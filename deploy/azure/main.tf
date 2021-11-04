@@ -9,8 +9,9 @@ module "keyvault" {
   resource_group_name               = module.resourceGroup.resource_group_name
   location                          = var.location
   keyvault_name                     = var.keyvault_name
-  SPLUNK_URL                        = var.SPLUNK_URL
-  SPLUNK_ACCESS_TOKEN               = var.SPLUNK_ACCESS_TOKEN
+  RouteConfig                       = var.RouteConfig
+  # SPLUNK_URL                        = var.SPLUNK_URL
+  # SPLUNK_ACCESS_TOKEN               = var.SPLUNK_ACCESS_TOKEN
   # PROMETHEUS_URL                    = var.PROMETHEUS_URL
   # RESTO_URL                         = var.RESTO_URL
   # PROMETHEUS_LOGIN                  = var.PROMETHEUS_LOGIN
@@ -29,8 +30,9 @@ module "function" {
   storage_account_replication_type  = var.storage_account_replication_type
   azure_func_name                   = var.azure_func_name
   CLOUD_PLATFORM                    = var.CLOUD_PLATFORM
-  SPLUNK_URL                        = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/SPLUNK-URL)"
-  SPLUNK_ACCESS_TOKEN               = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/SPLUNK-ACCESS-TOKEN)"
+  RouteConfig                       = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/RouteConfig)"
+  # SPLUNK_URL                        = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/SPLUNK-URL)"
+  # SPLUNK_ACCESS_TOKEN               = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/SPLUNK-ACCESS-TOKEN)"
   # PROMETHEUS_URL                    = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-URL)"
   # RESTO_URL                         = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/RESTO-URL)"
   # PROMETHEUS_LOGIN                  = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-LOGIN)"

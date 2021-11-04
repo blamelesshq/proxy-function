@@ -15,15 +15,20 @@ variable "keyvault_name" {
   description = "Key Vault Name in Azure"
 }
 
-variable "SPLUNK_URL" {
-    type        =   string
-    description = "SPLUNK_URL"
+variable "RouteConfig" {
+  type        = string
+  description = "RouteConfig"
 }
 
-variable "SPLUNK_ACCESS_TOKEN" {
-    type        =   string
-    description = "SPLUNK_ACCESS_TOKEN"
-}
+# variable "SPLUNK_URL" {
+#     type        =   string
+#     description = "SPLUNK_URL"
+# }
+
+# variable "SPLUNK_ACCESS_TOKEN" {
+#     type        =   string
+#     description = "SPLUNK_ACCESS_TOKEN"
+# }
 
 # variable "PROMETHEUS_URL" {
 #     type        =   string

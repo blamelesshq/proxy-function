@@ -57,14 +57,19 @@ variable "CLOUD_PLATFORM" {
     default     =   "Azure"
 }
 
-variable "SPLUNK_URL" {
-    type        = string
-    description = "SPLUNK_URL"
-}
+# variable "SPLUNK_URL" {
+#     type        = string
+#     description = "SPLUNK_URL"
+# }
 
-variable "SPLUNK_ACCESS_TOKEN" {
+# variable "SPLUNK_ACCESS_TOKEN" {
+#     type        = string
+#     description = "SPLUNK_ACCESS_TOKEN"
+# }
+
+variable "RouteConfig" {
     type        = string
-    description = "SPLUNK_ACCESS_TOKEN"
+    description = "RouteConfig"
 }
 
 # variable "PROMETHEUS_URL" {
