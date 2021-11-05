@@ -64,3 +64,8 @@ resource "azurerm_app_service_virtual_network_swift_connection" "example" {
   app_service_id = var.app_service_id
   subnet_id      = azurerm_subnet.example.id
 }
+
+resource "azurerm_subnet_nat_gateway_association" "example" {
+  subnet_id      = azurerm_subnet.example.id
+  nat_gateway_id = azurerm_nat_gateway.example.id
+}
