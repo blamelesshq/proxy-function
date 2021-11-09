@@ -13,9 +13,9 @@ import (
 )
 
 type FunctionObj struct {
-	Route             string
-	SplunkUrl         string
-	SplunkAccessToken string
+	Route       string
+	Url         string
+	AccessToken string
 }
 
 type RouteConfigObj struct {
@@ -28,12 +28,12 @@ type Response struct {
 }
 
 type Fetch struct {
-	Path              string
-	Search            string
-	Start             string
-	End               string
-	SplunkUrl         string
-	SplunkAccessToken string
+	Path        string
+	Search      string
+	Start       string
+	End         string
+	Url         string
+	AccessToken string
 }
 
 type Result struct {
@@ -119,7 +119,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 	payload := strings.NewReader("search=" + searchQuery)
 
 	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodPost, f.SplunkUrl, payload)
+	req, err := http.NewRequest(http.MethodPost, f.Url, payload)
 	req.URL.RawQuery = "output_mode=json"
 
 	req.URL.Path = f.Path
@@ -128,7 +128,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		fmt.Println(err)
 		return nil, fmt.Errorf("cannot make request to Splunk: %s", err)
 	}
-	req.Header.Add("Authorization", "Bearer "+f.SplunkAccessToken)
+	req.Header.Add("Authorization", "Bearer "+f.AccessToken)
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
 	resp, err := client.Do(req)
@@ -153,7 +153,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	time.Sleep(1 * time.Second)
 
-	req1, err1 := http.NewRequest(http.MethodGet, f.SplunkUrl, nil)
+	req1, err1 := http.NewRequest(http.MethodGet, f.Url, nil)
 	req1.URL.RawQuery = "output_mode=json&count=0"
 
 	req1.URL.Path = "/services/search/jobs/" + sid.Sid + "/results"
@@ -161,7 +161,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		return nil, fmt.Errorf("cannot create Splunk request: %s", err)
 	}
 
-	req1.Header.Add("Authorization", "Bearer "+f.SplunkAccessToken)
+	req1.Header.Add("Authorization", "Bearer "+f.AccessToken)
 
 	client1 := &http.Client{}
 	resp1, err1 := client1.Do(req1)
@@ -249,8 +249,8 @@ func NewFetch(values map[string]string) (*Fetch, error) {
 		fmt.Println("Route: " + c.(FunctionObj).Route)
 		return c.(FunctionObj).Route == "/api/fetch"
 	}).Select(func(c interface{}) interface{} {
-		fmt.Print(c.(FunctionObj).SplunkUrl)
-		return c.(FunctionObj).SplunkUrl
+		fmt.Print(c.(FunctionObj).Url)
+		return c.(FunctionObj).Url
 	}).First()
 
 	splunkUrlRes := fmt.Sprintf("%v", splunkUrl)
@@ -259,19 +259,19 @@ func NewFetch(values map[string]string) (*Fetch, error) {
 		fmt.Println("Route: " + c.(FunctionObj).Route)
 		return c.(FunctionObj).Route == "/api/fetch"
 	}).Select(func(c interface{}) interface{} {
-		fmt.Print(c.(FunctionObj).SplunkUrl)
-		return c.(FunctionObj).SplunkAccessToken
+		fmt.Print(c.(FunctionObj).Url)
+		return c.(FunctionObj).AccessToken
 	}).First()
 
 	splunkAccessTokenRes := fmt.Sprintf("%v", splunkAccessToken)
 
 	return &Fetch{
-		Path:              path,
-		Search:            search,
-		Start:             start,
-		End:               end,
-		SplunkUrl:         splunkUrlRes,
-		SplunkAccessToken: splunkAccessTokenRes,
+		Path:        path,
+		Search:      search,
+		Start:       start,
+		End:         end,
+		Url:         splunkUrlRes,
+		AccessToken: splunkAccessTokenRes,
 	}, nil
 }
 

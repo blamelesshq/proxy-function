@@ -26,6 +26,7 @@ variable "keyvault_name" {
 variable "RouteConfig" {
   type        = string
   description = "RouteConfig"
+  default     = ""
 }
 
 

@@ -11,9 +11,9 @@ import (
 )
 
 type FunctionObj struct {
-	Route             string
-	SplunkUrl         string
-	SplunkAccessToken string
+	Route       string
+	Url         string
+	AccessToken string
 }
 
 type RouteConfigObj struct {
