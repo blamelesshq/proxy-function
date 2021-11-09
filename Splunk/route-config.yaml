@@ -1,0 +1,18 @@
+﻿functions:
+- route: "/api/fetch"
+  url: "http://104.211.56.83:8089"
+  accessToken: "string_token"
+  type: "Splunk"
+- route: "/api/fetch2"
+  url: "http://104.211.56.83:8089"
+  accessToken: "string_token"
+  type: "Splunk"
+- route: "/api/fetch5"
+  url: "http://104.211.56.83:8089"
+  accessToken: "string_token"
+  type: "Splunk"  
+#- route: "/api/prometheus-2"
+#  url: <string_url>
+#  login: <string_token>
+#  password: <string_password>
+#  type: "Prometheus"

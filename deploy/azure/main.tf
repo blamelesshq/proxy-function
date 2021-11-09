@@ -9,7 +9,7 @@ module "keyvault" {
   resource_group_name               = module.resourceGroup.resource_group_name
   location                          = var.location
   keyvault_name                     = var.keyvault_name
-  RouteConfig                       = var.RouteConfig
+  # RouteConfig                       = var.RouteConfig
   # SPLUNK_URL                        = var.SPLUNK_URL
   # SPLUNK_ACCESS_TOKEN               = var.SPLUNK_ACCESS_TOKEN
   # PROMETHEUS_URL                    = var.PROMETHEUS_URL
@@ -44,6 +44,7 @@ module "function" {
 module "functionDeploy" {
   source          = "./functionDeploy"
   azure_func_name = module.function.functionapp_name
+  key_vault_name  = var.keyvault_name
 }
 
 module "keyvaultAccess" {
