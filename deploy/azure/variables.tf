@@ -125,7 +125,7 @@ variable "apimanagement_display_name" {
     description = "Azure API Management display name"
 }
 
-variable "availability_zones_regions" {
-  type    = list(string)
-  default = ["eastus", "eastus2", "southcentralus", "brazilsouth", "canadacentral", "westus2", "westus3", "francecentral", "germanywestcentral", "northeurope", "norwayeast", "uksouth", "westeurope", "southafricanorth", "australiaeast", "centralindia", "japaneast", "koreacentral", "southeastasia", "eastasia"]
+variable "nat_location" {
+    type        =  string
+    description = "NAT Location"
 }
