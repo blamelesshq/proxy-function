@@ -67,7 +67,6 @@ module "apiManagement" {
 
 module "natGateway" {
   source                 = "./natGateway"
-  location               = var.location
   resource_group_name    = module.resourceGroup.resource_group_name#var.resource_group_name
   natGateway_name        = "nat-${var.functionapp_name}"
   vnet_name              = "vnet-${var.functionapp_name}"
@@ -75,4 +74,5 @@ module "natGateway" {
   public_ip_name         = "ip-${var.functionapp_name}"
   subnet_delegation_name = "snetdel-${var.functionapp_name}"
   app_service_id         = module.function.functionapp_id
+  nat_location           = var.nat_location
 }

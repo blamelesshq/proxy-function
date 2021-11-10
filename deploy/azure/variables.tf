@@ -124,3 +124,8 @@ variable "apimanagement_display_name" {
     type    =   string
     description = "Azure API Management display name"
 }
+
+variable "nat_location" {
+    type        =  string
+    description = "NAT Location"
+}
