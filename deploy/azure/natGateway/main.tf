@@ -30,7 +30,7 @@ resource "azurerm_public_ip" "example" {
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
-  availability_zone   = "1"
+  #availability_zone   = "No-Zone"#contains(var.availability_zones_regions, var.location) ? "Zone-Redundant" : "No-Zone"
 }
 
 resource "azurerm_public_ip_prefix" "example" {
@@ -38,7 +38,7 @@ resource "azurerm_public_ip_prefix" "example" {
   location            = var.location
   resource_group_name = var.resource_group_name
   prefix_length       = 30
-  availability_zone   = "1"
+  #availability_zone   = "No-Zone"#contains(var.availability_zones_regions, var.location) ? "Zone-Redundant" : "No-Zone"
 }
 
 resource "azurerm_nat_gateway" "example" {

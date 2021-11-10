@@ -7,7 +7,7 @@
   url: "http://104.211.56.83:8089"
   accessToken: "string_token"
   type: "Splunk"
-- route: "/api/fetch5"
+- route: "/api/fetch6"
   url: "http://104.211.56.83:8089"
   accessToken: "string_token"
   type: "Splunk"  

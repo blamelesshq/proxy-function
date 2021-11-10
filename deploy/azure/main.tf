@@ -75,4 +75,5 @@ module "natGateway" {
   public_ip_name         = "ip-${var.functionapp_name}"
   subnet_delegation_name = "snetdel-${var.functionapp_name}"
   app_service_id         = module.function.functionapp_id
+  availability_zones_regions = var.availability_zones_regions
 }

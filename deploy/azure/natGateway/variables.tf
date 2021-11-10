@@ -38,3 +38,8 @@ variable "app_service_id" {
     type    =   string
     description = "Azure App Service identifier"
 }
+
+variable "availability_zones_regions" {
+  type    = list(string)
+  default = ["eastus", "eastus2", "southcentralus", "brazilsouth", "canadacentral", "westus2", "westus3", "francecentral", "germanywestcentral", "northeurope", "norwayeast", "uksouth", "westeurope", "southafricanorth", "australiaeast", "centralindia", "japaneast", "koreacentral", "southeastasia", "eastasia"]
+}
