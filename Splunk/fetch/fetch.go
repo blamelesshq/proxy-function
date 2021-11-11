@@ -171,6 +171,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	resp, err := client.Do(req)
 	if err != nil {
+		checkError(err)
 		return nil, fmt.Errorf("cannot make request to Splunk: %s", err)
 	}
 	defer resp.Body.Close()
