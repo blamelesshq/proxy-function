@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using BlamelessCodeBuilder;
+using ProxyFunctionRouteUpdater;
 using YamlDotNet.Serialization.NamingConventions;
 
 var yamlDeserializer = new YamlDotNet.Serialization.DeserializerBuilder()

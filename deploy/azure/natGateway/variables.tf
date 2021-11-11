@@ -34,12 +34,17 @@ variable "app_service_id" {
     description = "Azure App Service identifier"
 }
 
-variable "nat_location" {
+variable "location" {
   type        = string
-  description = "Location in Azure"
-
-  validation {
-      condition = contains(["eastus", "eastus2", "southcentralus", "brazilsouth", "canadacentral", "westus2", "westus3", "francecentral", "germanywestcentral", "northeurope", "norwayeast", "uksouth", "westeurope", "southafricanorth", "australiaeast", "centralindia", "japaneast", "koreacentral", "southeastasia", "eastasia"], var.nat_location)
-      error_message = "The nat location value must be one of these values: eastus, eastus2, southcentralus, brazilsouth, canadacentral, westus2, westus3, francecentral, germanywestcentral, northeurope, norwayeast, uksouth, westeurope, southafricanorth, australiaeast, centralindia, japaneast, koreacentral, southeastasia, eastasia!"
-  }
+  description = "RG location in Azure"
 }
+
+# variable "nat_location" {
+#   type        = string
+#   description = "Location in Azure"
+
+# #   validation {
+# #       condition = contains(["eastus", "eastus2", "southcentralus", "brazilsouth", "canadacentral", "westus2", "westus3", "francecentral", "germanywestcentral", "northeurope", "norwayeast", "uksouth", "westeurope", "southafricanorth", "australiaeast", "centralindia", "japaneast", "koreacentral", "southeastasia", "eastasia"], var.nat_location)
+# #       error_message = "The nat location value must be one of these values: eastus, eastus2, southcentralus, brazilsouth, canadacentral, westus2, westus3, francecentral, germanywestcentral, northeurope, norwayeast, uksouth, westeurope, southafricanorth, australiaeast, centralindia, japaneast, koreacentral, southeastasia, eastasia!"
+# #   }
+# }

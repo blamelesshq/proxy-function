@@ -12,6 +12,44 @@ import (
 	. "github.com/ahmetb/go-linq/v3"
 )
 
+// func checkError(err error) {
+// 	if err != nil {
+// 		client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
+// 		trace := appinsights.NewTraceTelemetry(err.Error(), appinsights.Error)
+// 		trace.Timestamp = time.Now()
+// 		client.Track(trace)
+// 		// false indicates that we should have this handle the panic, and
+// 		// not re-throw it.
+// 		defer appinsights.TrackPanic(client, false)
+// 		panic(err)
+// 	}
+// }
+
+// func checkStringError(err string) {
+// 	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
+// 	trace := appinsights.NewTraceTelemetry(err, appinsights.Error)
+// 	trace.Timestamp = time.Now()
+// 	client.Track(trace)
+// 	// false indicates that we should have this handle the panic, and
+// 	// not re-throw it.
+// 	defer appinsights.TrackPanic(client, false)
+// 	panic(err)
+// }
+
+// func handleRequestWithLog(h func(http.ResponseWriter, *http.Request)) http.HandlerFunc {
+// 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+// 		startTime := time.Now()
+// 		h(writer, request)
+// 		duration := time.Now().Sub(startTime)
+// 		client := appinsights.NewTelemetryClient(
+// 			os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
+// 		trace := appinsights.NewRequestTelemetry(
+// 			request.Method, request.URL.Path, duration, "200")
+// 		trace.Timestamp = time.Now()
+// 		client.Track(trace)
+// 	})
+// }
+
 type FunctionObj struct {
 	Route       string
 	Url         string
@@ -125,7 +163,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 	req.URL.Path = f.Path
 
 	if err != nil {
-		fmt.Println(err)
+		checkError(err)
 		return nil, fmt.Errorf("cannot make request to Splunk: %s", err)
 	}
 	req.Header.Add("Authorization", "Bearer "+f.AccessToken)
@@ -139,12 +177,15 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	res := &map[string]interface{}{}
 	if err := json.NewDecoder(resp.Body).Decode(res); err != nil {
+		checkError(err)
+		fmt.Errorf("cannot make request to Splunk: %s", err)
 		return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
 	}
 
 	var sid Sid
 	b, err := json.Marshal(res)
 	if err != nil {
+		checkError(err)
 		return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
 	}
 	json.Unmarshal([]byte(string(b)), &sid)
@@ -158,7 +199,8 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	req1.URL.Path = "/services/search/jobs/" + sid.Sid + "/results"
 	if err1 != nil {
-		return nil, fmt.Errorf("cannot create Splunk request: %s", err)
+		checkError(err1)
+		return nil, fmt.Errorf("cannot create Splunk request: %s", err1)
 	}
 
 	req1.Header.Add("Authorization", "Bearer "+f.AccessToken)
@@ -166,12 +208,14 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 	client1 := &http.Client{}
 	resp1, err1 := client1.Do(req1)
 	if err1 != nil {
-		return nil, fmt.Errorf("cannot make request to Splunk: %s", err)
+		checkError(err1)
+		return nil, fmt.Errorf("cannot make request to Splunk: %s", err1)
 	}
 	defer resp1.Body.Close()
 
 	res1 := &map[string]interface{}{}
 	if err1 := json.NewDecoder(resp1.Body).Decode(res1); err1 != nil {
+		checkError(err1)
 		return nil, fmt.Errorf("cannot parse body from Splunk 111: %s", err1)
 	}
 
@@ -184,6 +228,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		var result Result
 		res12, _ := json.Marshal(res)
 		if err != nil {
+			checkError(err)
 			return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
 		}
 		json.Unmarshal([]byte(string(res12)), &result)
@@ -239,27 +284,25 @@ func NewFetch(values map[string]string) (*Fetch, error) {
 	err := json.Unmarshal([]byte(os.Getenv("RouteConfig")), &routeConfigObj)
 
 	if err != nil {
-
-		// if error is not nil
-		// print error
-		fmt.Println(err)
+		checkError(err)
+		// fmt.Println(err)
 	}
 
 	var splunkUrl = From(routeConfigObj.Functions).Where(func(c interface{}) bool {
-		fmt.Println("Route: " + c.(FunctionObj).Route)
+		// fmt.Println("Route: " + c.(FunctionObj).Route)
 		return c.(FunctionObj).Route == "/api/fetch"
 	}).Select(func(c interface{}) interface{} {
-		fmt.Print(c.(FunctionObj).Url)
+		// fmt.Print(c.(FunctionObj).Url)
 		return c.(FunctionObj).Url
 	}).First()
 
 	splunkUrlRes := fmt.Sprintf("%v", splunkUrl)
 
 	var splunkAccessToken = From(routeConfigObj.Functions).Where(func(c interface{}) bool {
-		fmt.Println("Route: " + c.(FunctionObj).Route)
+		// fmt.Println("Route: " + c.(FunctionObj).Route)
 		return c.(FunctionObj).Route == "/api/fetch"
 	}).Select(func(c interface{}) interface{} {
-		fmt.Print(c.(FunctionObj).Url)
+		// fmt.Print(c.(FunctionObj).Url)
 		return c.(FunctionObj).AccessToken
 	}).First()
 

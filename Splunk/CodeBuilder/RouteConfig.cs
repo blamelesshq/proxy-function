@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace BlamelessCodeBuilder
+namespace ProxyFunctionRouteUpdater
 {
     public class Function
     {
@@ -26,7 +26,8 @@ namespace BlamelessCodeBuilder
             string? fileName;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
-                fileName = "/System/Applications/Utilities/Terminal.app";
+                fileName = "/bin/sh";
+                // fileName = "/System/Applications/Utilities/Terminal.app";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {

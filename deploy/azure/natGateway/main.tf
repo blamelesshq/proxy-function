@@ -3,7 +3,7 @@ data "azurerm_client_config" "current" {}
 resource "azurerm_virtual_network" "example" {
   name                = var.vnet_name
   address_space       = ["10.0.0.0/16"]
-  location            = var.nat_location
+  location            = var.location
   resource_group_name = var.resource_group_name
 }
 
@@ -26,28 +26,28 @@ resource "azurerm_subnet" "example" {
 
 resource "azurerm_public_ip" "example" {
   name                = var.public_ip_name
-  location            = var.nat_location
+  location            = var.location
   resource_group_name = var.resource_group_name
   allocation_method   = "Static"
   sku                 = "Standard"
-  availability_zone   = "Zone-Redundant"#contains(var.availability_zones_regions, var.location) ? "Zone-Redundant" : "No-Zone"
+  availability_zone   = "No-Zone"#"Zone-Redundant"#contains(var.availability_zones_regions, var.location) ? "Zone-Redundant" : "No-Zone"
 }
 
 resource "azurerm_public_ip_prefix" "example" {
   name                = "nat-gateway-publicIPPrefix"
-  location            = var.nat_location
+  location            = var.location
   resource_group_name = var.resource_group_name
   prefix_length       = 30
-  availability_zone   = "Zone-Redundant"#contains(var.availability_zones_regions, var.location) ? "Zone-Redundant" : "No-Zone"
+  availability_zone   = "No-Zone"#"Zone-Redundant"#contains(var.availability_zones_regions, var.location) ? "Zone-Redundant" : "No-Zone"
 }
 
 resource "azurerm_nat_gateway" "example" {
   name                    = var.natGateway_name
-  location                = var.nat_location
+  location                = var.location
   resource_group_name     = var.resource_group_name
   sku_name                = "Standard"
   idle_timeout_in_minutes = 10
-  zones                   = ["1"]
+  # zones                   = ["1"]
 }
 
 resource "azurerm_nat_gateway_public_ip_prefix_association" "example" {
