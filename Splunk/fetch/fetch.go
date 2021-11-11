@@ -215,9 +215,17 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 	defer resp1.Body.Close()
 
 	res1 := &map[string]interface{}{}
-	if err1 := json.NewDecoder(resp1.Body).Decode(res1); err1 != nil {
-		checkError(err1)
-		return nil, fmt.Errorf("cannot parse body from Splunk 111: %s", err1)
+	err2 := json.NewDecoder(resp1.Body).Decode(res1)
+
+	if resp1.StatusCode != 200 {
+		jsonString2, _ := json.Marshal(res1)
+		fmt.Println("Response: " + string(jsonString2))
+		checkStringError("Unsuccessful response returned from server! Response:" + string(jsonString2))
+		return nil, fmt.Errorf("%s", string(jsonString2))
+	}
+
+	if err2 != nil {
+		return nil, fmt.Errorf("cannot parse body from Splunk 111: %s", err2)
 	}
 
 	results := (*res1)["results"].(([]interface{}))

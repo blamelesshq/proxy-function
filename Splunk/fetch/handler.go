@@ -13,6 +13,17 @@ type Sid struct {
 	Sid string
 }
 
+func checkStringError(err string) {
+	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
+	trace := appinsights.NewTraceTelemetry(err, appinsights.Error)
+	trace.Timestamp = time.Now()
+	client.Track(trace)
+	// false indicates that we should have this handle the panic, and
+	// not re-throw it.
+	defer appinsights.TrackPanic(client, false)
+	panic(err)
+}
+
 func checkError(err error) {
 	if err != nil {
 		client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
