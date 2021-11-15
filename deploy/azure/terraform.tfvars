@@ -1,9 +1,9 @@
 # General - Resource Group
-resource_group_name                         = "rg-blameless-splunk-09114"
+resource_group_name                         = "rg-blameless-splunk-1511"
 location                                    = "westus"
 
 # KeyVault
-keyvault_name                               = "kv-blameless-splunk09114"
+keyvault_name                               = "kv-blameless-splunk1511"
 #PROMETHEUS_URL                              = "http://prometheus18102021.westeurope.azurecontainer.io:9090/"
 #RESTO_URL                                   = ""
 #PROMETHEUS_LOGIN                            = ""
@@ -16,20 +16,17 @@ RouteConfig                                  = ""
 #AzureFunction
 sku_tier                                    = "Standard"
 sku_size                                    = "S1"
-functionapp_name                            = "fa-blameless-splunk09114"
-appinsights_name                            = "ai-blameless-splunk09114"
-storage_account_name                        = "stblamelesssplunk09114"
+functionapp_name                            = "fa-blameless-splunk1511"
+appinsights_name                            = "ai-blameless-splunk1511"
+storage_account_name                        = "stblamelesssplunk1511"
 storage_account_tier                        = "Standard"
 storage_account_replication_type            = "LRS"
 CLOUD_PLATFORM                              = "Azure"
-azure_func_name                             = "blamelesssplunk09114"
+azure_func_name                             = "blamelesssplunk1511"
 
 #ApiManagement
-apimanagement_name                          = "amblamelesssplunk09114"
+apimanagement_name                          = "amblamelesssplunk1511"
 publisher_name                              = "Blameless"
 admin_email                                 = "admin@blameless.com"
 sku_name                                    = "Consumption_0"
 apimanagement_display_name                  = "Blameless"
-
-#NatGateway
-availability_zones_regions                  = ["eastus", "eastus2", "southcentralus", "brazilsouth", "canadacentral", "westus2", "westus3", "francecentral", "germanywestcentral", "northeurope", "norwayeast", "uksouth", "westeurope", "southafricanorth", "australiaeast", "centralindia", "japaneast", "koreacentral", "southeastasia", "eastasia"]
