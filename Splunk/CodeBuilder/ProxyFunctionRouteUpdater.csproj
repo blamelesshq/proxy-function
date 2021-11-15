@@ -7,11 +7,16 @@
     <Nullable>enable</Nullable>
 	<PublishSingleFile>true</PublishSingleFile>
 	<PublishTrimmed>true</PublishTrimmed>
-	<DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-	<DockerfileContext>.</DockerfileContext>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="route-config.yaml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

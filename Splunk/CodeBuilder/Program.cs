@@ -1,4 +1,5 @@
-﻿using ProxyFunctionRouteUpdater;
+﻿using Newtonsoft.Json;
+using ProxyFunctionRouteUpdater;
 using YamlDotNet.Serialization.NamingConventions;
 
 var yamlDeserializer = new YamlDotNet.Serialization.DeserializerBuilder()
@@ -7,11 +8,11 @@ var yamlDeserializer = new YamlDotNet.Serialization.DeserializerBuilder()
 
 var myConfig = yamlDeserializer.Deserialize<RouteConfig>(File.ReadAllText("route-config.yaml"));
 
-#pragma warning disable IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
-var myConfigJsonFormat = System.Text.Json.JsonSerializer.Serialize(myConfig);
-#pragma warning restore IL2026 // Members annotated with 'RequiresUnreferencedCodeAttribute' require dynamic access otherwise can break functionality when trimming application code
+var myConfigJsonFormat = JsonConvert.SerializeObject(myConfig);
+myConfigJsonFormat = JsonConvert.ToString(myConfigJsonFormat);
+//myConfigJsonFormat = JsonConvert.ToString(myConfigJsonFormat);
 
-myConfigJsonFormat = $"\"{myConfigJsonFormat.Replace("\"", "\\\"")}\"";
+//myConfigJsonFormat = $"{myConfigJsonFormat.Substring(1, myConfigJsonFormat.Length - 2)}";
 
 var functionDirectoriesList = new List<string>();
 myConfig.Functions.ForEach(f =>
@@ -24,7 +25,7 @@ myConfig.Functions.ForEach(f =>
         var createFunctionDirResult = Shell.Bash($"func new --name {functionName} --template \"HTTP trigger\" --authlevel \"anonymous\" --methods \"get\" --custom", true);
     }
 });
-    
+
 var updateKeyVaultResult = Shell.Bash($"az keyvault secret set --vault-name \"{args[0]}\" --name \"RouteConfig\" --value='{myConfigJsonFormat}'");
 Console.WriteLine(updateKeyVaultResult);
 
