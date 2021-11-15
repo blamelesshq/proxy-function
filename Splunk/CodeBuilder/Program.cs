@@ -1,5 +1,4 @@
-﻿using Newtonsoft.Json;
-using ProxyFunctionRouteUpdater;
+﻿using ProxyFunctionRouteUpdater;
 using YamlDotNet.Serialization.NamingConventions;
 
 var yamlDeserializer = new YamlDotNet.Serialization.DeserializerBuilder()
@@ -8,9 +7,12 @@ var yamlDeserializer = new YamlDotNet.Serialization.DeserializerBuilder()
 
 var myConfig = yamlDeserializer.Deserialize<RouteConfig>(File.ReadAllText("route-config.yaml"));
 
-var myConfigJsonFormat = JsonConvert.SerializeObject(myConfig);
-myConfigJsonFormat = JsonConvert.ToString(myConfigJsonFormat);
-myConfigJsonFormat = JsonConvert.ToString(myConfigJsonFormat);
+var myConfigJsonFormat = System.Text.Json.JsonSerializer.Serialize(myConfig);
+
+myConfigJsonFormat = $"\"{myConfigJsonFormat.Replace("\"", "\\\"")}\"";
+myConfigJsonFormat = myConfigJsonFormat.Replace("\"", "\\\\\"");
+myConfigJsonFormat = $"\"{myConfigJsonFormat.Substring(1, myConfigJsonFormat.Length - 3)}\"{myConfigJsonFormat[myConfigJsonFormat.Length - 1]}";
+
 
 var functionDirectoriesList = new List<string>();
 myConfig.Functions.ForEach(f =>
