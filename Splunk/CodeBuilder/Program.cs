@@ -21,14 +21,11 @@ myConfig.Functions.ForEach(f =>
     if (!functionDirExists)
     {
         functionDirectoriesList.Add(functionName);
-        var createFunctionDirResult = Shell.Bash($"func new --name {functionName} --template \"HTTP trigger\" --authlevel \"anonymous\" --methods \"get\"", true);
+        var createFunctionDirResult = Shell.Bash($"func new --name {functionName} --template \"HTTP trigger\" --authlevel \"anonymous\" --methods \"get\" --custom", true);
     }
 });
-
-Console.WriteLine("Before key vault");
-Console.WriteLine("Args: " + args.Length);
+    
 var updateKeyVaultResult = Shell.Bash($"az keyvault secret set --vault-name \"{args[0]}\" --name \"RouteConfig\" --value='{myConfigJsonFormat}'");
-Console.WriteLine("After key vault");
 Console.WriteLine(updateKeyVaultResult);
 
 
