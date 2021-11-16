@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "ProxyFunctionRouteUpdater": {
+      "commandName": "Project",
+      "commandLineArgs": "kv-blameless-splunk16114 blamelesssplunk16114"
+    },
+    "ArgsProfile": {
+      "commandName": "Executable"
+    }
+  }
+}
