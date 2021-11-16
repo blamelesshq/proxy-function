@@ -27,7 +27,6 @@ namespace ProxyFunctionRouteUpdater
             if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
             {
                 fileName = "/bin/sh";
-                // fileName = "/System/Applications/Utilities/Terminal.app";
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
