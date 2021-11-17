@@ -4,8 +4,13 @@
       "commandName": "Project",
       "commandLineArgs": "kv-blameless-splunk16114 blamelesssplunk16114"
     },
-    "ArgsProfile": {
-      "commandName": "Executable"
+    "ApiManagement": {
+      "commandName": "Project",
+      "commandLineArgs": "ApiManagement ../../Splunk ../../deploy/azure"
+    },
+    "FunctopApp": {
+      "commandName": "Project",
+      "commandLineArgs": "FunctionApp ../../Splunk"
     }
   }
 }
