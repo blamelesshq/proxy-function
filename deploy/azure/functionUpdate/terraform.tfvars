@@ -1,2 +1,5 @@
-azure_func_name = "blamelesssplunk16114"
-key_vault_name    = "kv-blameless-splunk16114"
+azure_func_name        = "blamelesssplunk19111"
+key_vault_name         = "kv-blameless-splunk19111"
+resource_group_name    = "rg-blameless-splunk-19111"
+apimanagement_name     = "amblamelesssplunk19111"
+apimanagement_revision = "2"
