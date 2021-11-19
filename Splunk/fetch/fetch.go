@@ -107,7 +107,6 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	epochStart := f.Start //convertDateTimeToEpoch(f.Start)
 	epochEnd := f.End     //convertDateTimeToEpoch(f.End)
-
 	// fmt.Println(f.Search)
 	parts := strings.Split(f.Search, "|")
 	sort.Strings(parts)
@@ -154,7 +153,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	fmt.Println(searchQuery)
 
-	payload := strings.NewReader("search=" + searchQuery)
+	payload := strings.NewReader("search=" + searchQuery + "&exec_mode=blocking")
 
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPost, f.Url, payload)

@@ -12,10 +12,12 @@ var proxyFunctionLocation = args[1];
 var specFolderLocation = string.Empty;
 var keyVaultName = string.Empty;
 var functionAppName = string.Empty;
+var funcName = string.Empty;
 
 if (type.Equals("ApiManagement"))
 {
     specFolderLocation = args[2];
+    funcName = args[3];
 }
 else
 {
@@ -78,12 +80,22 @@ if (type.Equals("ApiManagement"))
 
     if (apiSpec != null)
     {
+        apiSpec.Info.Title = funcName;
+        apiSpec.Info.Description = $"Import from {funcName} Function App";
+        apiSpec.Servers[0].Url = $"https://{funcName}.azurewebsites.net/api";
+        foreach(var item in apiSpec.Security)
+        {
+            foreach(var i in item)
+            {
+                if(i.Value == null)
+                {
+                    item.Remove(i.Key);
+                }
+            }
+        }
         var newApiSpec = yamlSerializer.Serialize(apiSpec);
-        newApiSpec = newApiSpec.Replace("  apiKeyQuery: \r\n", "");
-        newApiSpec = newApiSpec.Replace("apiKeyHeader: \r\n  ", "");
         newApiSpec = newApiSpec.Replace("1.0", "'1.0'");
         newApiSpec = newApiSpec.Replace("200", "'200'");
-        newApiSpec = newApiSpec.Replace("[]", "[ ]");
 
         File.Delete($"{specFolderLocation}/api-spec.yml");
         File.WriteAllText($"{specFolderLocation}/api-spec.yml", newApiSpec);

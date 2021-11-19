@@ -1,3 +1,8 @@
+module "apiManagementSpecBuilder" {
+  source = "./apiManagementSpecBuilder"
+  azure_func_name = var.azure_func_name
+}
+
 module "resourceGroup" {
   source = "./resourceGroup"
   resource_group_name               = var.resource_group_name
@@ -60,9 +65,14 @@ module "apiManagement" {
   publisher_name                    = var.publisher_name
   admin_email                       = var.admin_email
   sku_name                          = var.sku_name
-  apimanagement_display_name        = var.apimanagement_display_name
   azure_func_name                   = module.function.name#var.azure_func_name
   apimanagement_name                = var.apimanagement_name
+}
+
+module "apiManagementImport" {
+  source              = "./apiManagementImport"
+  resource_group_name = module.resourceGroup.resource_group_name
+  apimanagement_name  = module.apiManagement.apimanagement_name
 }
 
 module "natGateway" {

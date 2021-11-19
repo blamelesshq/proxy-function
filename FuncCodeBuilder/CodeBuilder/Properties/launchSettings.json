@@ -6,9 +6,9 @@
     },
     "ApiManagement": {
       "commandName": "Project",
-      "commandLineArgs": "ApiManagement ../../Splunk ../../deploy/azure"
+      "commandLineArgs": "ApiManagement ../../../../../Splunk ../../../../../deploy/azure blamelesssplunk17111"
     },
-    "FunctopApp": {
+    "FunctonApp": {
       "commandName": "Project",
       "commandLineArgs": "FunctionApp ../../Splunk"
     }

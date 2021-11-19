@@ -7,7 +7,7 @@
         public List<Server> Servers { get; set; } = default!;
         public Dictionary<string, Fetch> Paths { get; set; } = default!;
         public Components Components { get; set; } = default!;
-        public List<Security> Security { get; set; } = default!;
+        public List<Dictionary<string, object>> Security { get; set; } = default!;
     }
 
     public class Components
@@ -52,14 +52,9 @@
         public string Description { get; set; } = default!;
     }
 
-    public class Security
-    {
-        public object[] ApiKeyHeader { get; set; } = default!;
-        public object[] ApiKeyQuery { get; set; } = default!;
-    }
-
     public class Server
     {
         public string Url { get; set; } = default!;
     }
+
 }

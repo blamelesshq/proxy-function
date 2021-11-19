@@ -28,10 +28,10 @@ variable "sku_name" {
     default = "Consumption_0"
 }
 
-variable "apimanagement_display_name" {
-    type    =   string
-    description = "Azure API Management display name"
-}
+# variable "apimanagement_display_name" {
+#     type    =   string
+#     description = "Azure API Management display name"
+# }
 
 variable "azure_func_name" {
     type    =   string

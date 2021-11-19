@@ -1,9 +1,9 @@
 # General - Resource Group
-resource_group_name                         = "rg-blameless-splunk-16115"
-location                                    = "eastus"
+resource_group_name                         = "rg-blameless-splunk-19111"
+location                                    = "westus"
 
 # KeyVault
-keyvault_name                               = "kv-blameless-splunk16115"
+keyvault_name                               = "kv-blameless-splunk19111"
 #PROMETHEUS_URL                              = "http://prometheus18102021.westeurope.azurecontainer.io:9090/"
 #RESTO_URL                                   = ""
 #PROMETHEUS_LOGIN                            = ""
@@ -16,17 +16,17 @@ RouteConfig                                  = ""
 #AzureFunction
 sku_tier                                    = "Standard"
 sku_size                                    = "S1"
-functionapp_name                            = "fa-blameless-splunk16115"
-appinsights_name                            = "ai-blameless-splunk16115"
-storage_account_name                        = "stblamelesssplunk16115"
+functionapp_name                            = "fa-blameless-splunk19111"
+appinsights_name                            = "ai-blameless-splunk19111"
+storage_account_name                        = "stblamelesssplunk19111"
 storage_account_tier                        = "Standard"
 storage_account_replication_type            = "LRS"
 CLOUD_PLATFORM                              = "Azure"
-azure_func_name                             = "blamelesssplunk16115"
+azure_func_name                             = "blamelesssplunk19111"
 
 #ApiManagement
-apimanagement_name                          = "amblamelesssplunk16115"
+apimanagement_name                          = "amblamelesssplunk19111"
 publisher_name                              = "Blameless"
 admin_email                                 = "admin@blameless.com"
 sku_name                                    = "Consumption_0"
-apimanagement_display_name                  = "Blameless"
+# apimanagement_display_name                  = "Blameless"
