@@ -66,16 +66,30 @@ Now that we have the code base and tools locally, and we have our own Azure Subs
 
 1. First resource that needs to be created is Resource Group. **(Required Resource!)**
 All resources in Azure are organized and placed in a container called [resource group](https://docs.microsoft.com/en-us/azure/azure-resource-manager/management/manage-resource-groups-portal#what-is-a-resource-group). This container and all other azure resources (objects) need to be placed in a certain Geographic Location called [regions](https://docs.microsoft.com/en-us/azure/availability-zones/az-overview). So the first resource that we need to create in Azure is Resource Group where all other resources will be put in. 
-In order to do that with terraform, proper terraform script should be defined. Please navigate to the [Resource Group Terraform script](./deploy/azure/resourceGroup/main.tf) to see the script. In the first section:
+In order to do that with terraform, proper terraform script should be defined. 
+
+In a specific [providers.tf file](./deploy/azure/resourceGroup/providers.tf) the specific version of terraform provider is described.
+
+Current version is specified in the file
 ```
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "2.83.0"
+    }
+  }
+}
+
 provider "azurerm" {
-  version = "=2.47.0"
   features {}
 }
 ```
-Proper [Terraform Azure Provider](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs) version is specified. For this sample version ```2.47.0``` is used. 
+Same version is specified in all other terraform modules as well.
 
-In the second section of the script:
+Please navigate to the [Resource Group Terraform script](./deploy/azure/resourceGroup/main.tf) to see the main script. 
+
+In the first section of the script:
 ```
 resource "azurerm_resource_group" "rg" {
   name     = var.resource_group_name
@@ -87,14 +101,8 @@ the actual resource group is defined. Name of the resource group (that should be
 2. Azure Function App **(Required Resource!)**
 [Azure Function App](https://docs.microsoft.com/en-us/azure/azure-functions/functions-overview) is a collection of one or more functions that are managed together. All functions in the function app share the same pricing plan which can be [Consumption plan](https://docs.microsoft.com/en-us/azure/azure-functions/consumption-plan), [Premium plan](https://docs.microsoft.com/en-us/azure/azure-functions/functions-premium-plan?tabs=portal) or [Dedicated plan](https://docs.microsoft.com/en-us/azure/azure-functions/dedicated-plan). Mainly Azure Functions are serverless solution that allows you to write less code, maintain less infrastructure, and save on costs.
 In order to create Azure Function App using Terraform script couple of things needed to be specified.
-Like any terraform script first thing that needed to be specified is Azure Provider version (same as in the resource group above)
-```
-provider "azurerm" {
-  version = "=2.47.0"
-  features {}
-}
-```
-Second thing that need to be created is Azure Storage Account. This is required for Azure Function App. For more info why this is needed go to [Azure Function App Storage Account page](https://docs.microsoft.com/en-us/azure/azure-functions/storage-considerations). In our case this is the terraform section that does this:
+
+First thing that need to be created is Azure Storage Account. This is required for Azure Function App. For more info why this is needed go to [Azure Function App Storage Account page](https://docs.microsoft.com/en-us/azure/azure-functions/storage-considerations). In our case this is the terraform section that does this:
 ```
 resource "azurerm_storage_account" "funcdeploy" {
   name                     = var.storage_account_name
@@ -235,7 +243,8 @@ Main terraform script is defined [here](./deploy/azure/function/main.tf), togeth
       "get",
       "list",
       "set",
-      "delete"
+      "delete",
+      "purge",
     ]
 
     storage_permissions = [
@@ -301,23 +310,6 @@ Api Management resource is getting created. Similar to other resources variables
 - ```publisher_name,publisher_email``` can be anything.
 - ```sku_name``` - sku_name is a string consisting of two parts separated by an underscore(_). The first part is the name, valid values include: Consumption, Developer, Basic, Standard and Premium. The second part is the capacity (e.g. the number of deployed units of the sku), which must be a positive integer
 
-Second section of the script:
-```
-resource "azurerm_api_management_api" "example" {
-  name                = var.apimanagement_name
-  resource_group_name = var.resource_group_name
-  api_management_name = azurerm_api_management.example.name
-  revision            = "2"
-  display_name        = var.apimanagement_display_name
-  path                = ""
-  protocols           = ["https"]
-
-  import {
-    content_format = "openapi"
-    content_value  = file("api-spec.yml")
-  }
-}
-```
 It is for creating an API within Azure API Management service. To do this an openapi spec is predefined in this [file](./deploy/azure/api-spec.yml).
 With the last section:
 ```
@@ -325,21 +317,12 @@ resource "azurerm_api_management_api_policy" "example" {
   api_name            = azurerm_api_management_api.example.name
   api_management_name = azurerm_api_management_api.example.api_management_name
   resource_group_name = var.resource_group_name
-
-  # Put any policy block here, has to beh XML :(
-  # More options: https://docs.microsoft.com/en-us/azure/api-management/api-management-policies
-  xml_content = <<XML
-    <policies>
-        <inbound>
-            <base />
-            <set-backend-service base-url="https://${var.azure_func_name}.azurewebsites.net/api/" />
-        </inbound>
-    </policies>
-  XML
-}
 ```
-proper backend policy is getting created. This means that API Management will ping newly created Azure Function App in the backend and retrieve the response from there and return it.
-Main terraform script can be find [here](./deploy/azure/apiManagement.tf)
+Main terraform script can be find [here](./deploy/azure/main.tf)
+7. Azure API Management Spec Builder (**OPTIONAL**)
+8. Azure API Management Import (**OPTIONAL**)
+9. functionUpdate (**OPTIONAL**)
+10. functionDeploy (**REQUIRED**)
 
 
 **Conculsion:**
