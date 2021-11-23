@@ -326,7 +326,7 @@ Main terraform script can be find [here](./deploy/azure/main.tf)
 
 
 **Conculsion:**
-These 6 terraform modules are all connected in one [main.tf](./deploy/azure/main.tf) terraform script. All variables for the main terraform script is defined in [variables.tf](./deploy/azure/variables.tf) file. Actual values for the variables can be finded in [terraform.tfvars](./deploy/azure/terraform.tfvars)
+These 10 terraform modules are all connected in one [main.tf](./deploy/azure/main.tf) terraform script. All variables for the main terraform script is defined in [variables.tf](./deploy/azure/variables.tf) file. Actual values for the variables can be finded in [terraform.tfvars](./deploy/azure/terraform.tfvars)
 
 
 In order to execute current terraform scripts you need to navigate to this "./deploy/azure/" directory via terminal and follow these steps by using Terraform CLI:
