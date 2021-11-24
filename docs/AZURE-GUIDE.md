@@ -8,6 +8,7 @@ Deployment Guide for the Blameless Proxy function in Azure
 | Content          | This project provides a Terraform script with 10 Terraform modules to configure and deploy the required cloud infrastructure in Azure and the Blameless proxy function. |
 | Deployment steps | 1. Deploy all necessary Azure resources in one single Terraform command.
 
+For more tech detail description on the deployment go to  [AZURE-INDEPTH-TECH-GUIDE](./AZURE-INDEPTH-TECH-GUIDE.md) document and [FuncCodeBuilder](./FuncCodeBuilder.md) documents.
 
 ## PREREQUISITES
 
