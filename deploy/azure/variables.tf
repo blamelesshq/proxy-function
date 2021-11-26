@@ -9,6 +9,11 @@ variable "location" {
     description = "Resources Location"
 }
 
+variable "code_directory" {
+    type        =   string
+    description =   "Source code directory"
+}
+
 # KeyVault
 variable "keyvault_name" {
   type        = string
@@ -19,36 +24,6 @@ variable "RouteConfig" {
   type        = string
   description = "RouteConfig"
 }
-
-# variable "SPLUNK_URL" {
-#     type        =   string
-#     description = "SPLUNK_URL"
-# }
-
-# variable "SPLUNK_ACCESS_TOKEN" {
-#     type        =   string
-#     description = "SPLUNK_ACCESS_TOKEN"
-# }
-
-# variable "PROMETHEUS_URL" {
-#     type        =   string
-#     description = "Prometheus Server URL Configuration"
-# }
-
-# variable "RESTO_URL" {
-#     type        =   string
-#     description = "Resto URL"
-# }
-
-# variable "PROMETHEUS_LOGIN" {
-#     type        =   string
-#     description = "Resto Login"
-# }
-
-# variable "PROMETHEUS_PASSWORD" {
-#     type        =   string
-#     description =   "Prometheus server password (if any)"
-# }
 
 #AzureFunction
 variable "sku_tier" {
@@ -119,8 +94,3 @@ variable "sku_name" {
     description = "Azure API Management Sku Name"
     default = "Consumption_0"
 }
-
-# variable "apimanagement_display_name" {
-#     type    =   string
-#     description = "Azure API Management display name"
-# }

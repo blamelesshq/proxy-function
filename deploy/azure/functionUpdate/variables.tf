@@ -22,3 +22,8 @@ variable "apimanagement_revision" {
     type    =   string
     description = "Azure API Management revision"
 }
+
+variable "code_directory" {
+    type        =   string
+    description =   "Source code directory"
+}
