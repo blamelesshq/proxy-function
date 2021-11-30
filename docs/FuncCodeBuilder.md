@@ -7,17 +7,20 @@ Sample:
 ```functions:
 - route: "/api/fetch"
   url: "http://104.211.56.83:8089"
-  accessToken: "string_token"
-  type: "Splunk"
+  accessToken: "splunk_server_access_token" # Only if Type="Splunk"
+  type: "Splunk"  # Possible values: "Prometheus" | "Splunk"
 - route: "/api/fetch3"
   url: "http://104.211.56.83:8089"
-  accessToken: "string_token"
-  type: "Splunk"
+  accessToken: "splunk_server_access_token" # Only if Type="Splunk"
+  type: "Splunk"  # Possible values: "Prometheus" | "Splunk"
 - route: "/api/fetch4"
   url: "http://104.211.56.83:8089"
-  accessToken: "string_token"
-  type: "Prometheus"  
+  login: "prometheus_server_login" # Only if Type="Prometheus"
+  password: "prometheus_server_Password" # Only if Type="Prometheus"
+  type: "Prometheus"   # Possible values: "Prometheus" | "Splunk"
 ```
+
+Possible values
 
 This route-config is set up as an environment variable (RouteConfig) in the escaped JSON format on Azure. The goal of this route config is to define as much Function Apps as we want with proper routes (that need to be distinct), url (server url), accessToken, type.
 
