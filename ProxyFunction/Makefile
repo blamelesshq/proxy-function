@@ -18,17 +18,16 @@ zip-gcp:
 	zip -j function_gcp.zip fetch/* go.mod go.sum
 
 deploy_aws: zip-aws
-	cd ./deploy/aws; terraform apply
+	cd ../deploy/aws; terraform apply
 
 deploy_gcp: zip-gcp
-	cd ./deploy/gcp; terraform apply
+	cd ../deploy/gcp; terraform apply
 
 deploy_azure: 
-	cd ./deploy/azure; terraform init; terraform plan -out tfplan; terraform apply
+	cd ../deploy/azure; terraform init; terraform plan -out tfplan; terraform apply
 
 .PHONY: deploy
 deploy:
-	@read -p "Chose cloud to deploy a prometheus fetch function (AWS/GCP/Azure):" cloud; \
+	@read -p "Chose cloud to deploy a prometheus fetch function (AWS/GCP):" cloud; \
 	if [ $$cloud = "AWS" ]; then $(MAKE) deploy_aws; fi; \
 	if [ $$cloud = "GCP" ]; then $(MAKE) deploy_gcp; fi;
-	if [ $$cloud = "Azure" ]; then $(MAKE) deploy_azure; fi;
