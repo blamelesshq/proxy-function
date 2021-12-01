@@ -18,10 +18,13 @@ zip-gcp:
 	zip -j function_gcp.zip fetch/* go.mod go.sum
 
 deploy_aws: zip-aws
-	cd ./deploy/aws; terraform apply
+	cd ../deploy/aws; terraform apply
 
 deploy_gcp: zip-gcp
-	cd ./deploy/gcp; terraform apply
+	cd ../deploy/gcp; terraform apply
+
+deploy_azure: 
+	cd ../deploy/azure; terraform init; terraform plan -out tfplan; terraform apply
 
 .PHONY: deploy
 deploy:
