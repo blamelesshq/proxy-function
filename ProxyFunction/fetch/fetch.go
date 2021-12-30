@@ -8,7 +8,6 @@ import (
 	"os"
 	"sort"
 	"strings"
-	"time"
 
 	. "github.com/ahmetb/go-linq/v3"
 )
@@ -146,7 +145,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 
 	fmt.Println(searchQuery)
 
-	payload := strings.NewReader("search=" + searchQuery + "&exec_mode=blocking")
+	payload := strings.NewReader("search=" + searchQuery + "&exec_mode=oneshot&timeout=30")
 
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodPost, f.Url, payload)
@@ -166,6 +165,9 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		checkError(err)
 		return nil, fmt.Errorf("cannot make request to Splunk: %s", err)
 	}
+
+	// fmt.Println("Content Lenght: " + strconv.Itoa(resp.ContentLength))
+
 	defer resp.Body.Close()
 
 	res := &map[string]interface{}{}
@@ -175,48 +177,49 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 		return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
 	}
 
-	var sid Sid
-	b, err := json.Marshal(res)
-	if err != nil {
-		checkError(err)
-		return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
-	}
-	json.Unmarshal([]byte(string(b)), &sid)
+	// var sid Sid
+	// b, err := json.Marshal(res)
+	// if err != nil {
+	// 	checkError(err)
+	// 	return nil, fmt.Errorf("cannot parse body from Splunk: %s", err)
+	// }
+	// json.Unmarshal([]byte(string(b)), &sid)
 
 	// fmt.Println(res)
 
-	time.Sleep(1 * time.Second)
+	// time.Sleep(1 * time.Second)
 
-	req1, err1 := http.NewRequest(http.MethodGet, f.Url, nil)
-	req1.URL.RawQuery = "output_mode=json&count=0"
+	// req1, err1 := http.NewRequest(http.MethodGet, f.Url, nil)
+	// req1.URL.RawQuery = "output_mode=json&count=0"
 
-	req1.URL.Path = "/services/search/jobs/" + sid.Sid + "/results"
-	if err1 != nil {
-		checkError(err1)
-		return nil, fmt.Errorf("cannot create Splunk request: %s", err1)
-	}
+	// req1.URL.Path = "/services/search/jobs/" + sid.Sid + "/results"
+	// if err1 != nil {
+	// 	checkError(err1)
+	// 	return nil, fmt.Errorf("cannot create Splunk request: %s", err1)
+	// }
 
-	req1.Header.Add("Authorization", "Bearer "+f.AccessToken)
+	// req1.Header.Add("Authorization", "Bearer "+f.AccessToken)
 
-	client1 := &http.Client{}
-	resp1, err1 := client1.Do(req1)
-	if err1 != nil {
-		checkError(err1)
-		return nil, fmt.Errorf("cannot make request to Splunk: %s", err1)
-	}
-	defer resp1.Body.Close()
+	// client1 := &http.Client{}
+	// resp1, err1 := client1.Do(req1)
+	// if err1 != nil {
+	// 	checkError(err1)
+	// 	return nil, fmt.Errorf("cannot make request to Splunk: %s", err1)
+	// }
+	// defer resp1.Body.Close()
 
-	res1 := &map[string]interface{}{}
-	json.NewDecoder(resp1.Body).Decode(res1)
+	// res1 := &map[string]interface{}{}
+	// json.NewDecoder(resp1.Body).Decode(res1)
 
-	if resp1 == nil || resp1.StatusCode != 200 {
-		jsonString2, _ := json.Marshal(res1)
+	fmt.Println(resp.StatusCode)
+	if resp == nil || resp.StatusCode != 200 {
+		jsonString2, _ := json.Marshal(res)
 		fmt.Println("Response: " + string(jsonString2))
 		checkStringError("Unsuccessful response returned from server! Response:" + string(jsonString2))
 		return nil, fmt.Errorf("%s", string(jsonString2))
 	}
 
-	results := (*res1)["results"].(([]interface{}))
+	results := (*res)["results"].(([]interface{}))
 
 	var finalResponse = "{ \"data\": { \"result\": [ { \"metric\": {}, \"values\": ["
 
@@ -243,7 +246,7 @@ func (f *Fetch) DoSplunk() (*Response, error) {
 	json.Unmarshal([]byte(finalResponse), &finalResult)
 
 	return &Response{
-		StatusCode: resp1.StatusCode,
+		StatusCode: resp.StatusCode,
 		Data:       finalResult,
 	}, nil
 }
