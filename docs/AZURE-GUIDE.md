@@ -158,7 +158,7 @@ Go to the root of the Terraform configuration files:
 $ cd ./deploy/azure
 ```
 
-or with [Makefile](../ProxyFunction/Makefile) -
+or with [Makefile](../ProxyFunctionAzure/Makefile) -
 ```make deploy_azure```
 
 Initialize your working directory containing your Terraform configuration files

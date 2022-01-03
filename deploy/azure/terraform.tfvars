@@ -1,7 +1,7 @@
 # General - Resource Group
 resource_group_name                         = "rg-blameless-splunk-19111"
 location                                    = "westus"
-code_directory                              = "../../ProxyFunction"
+code_directory                              = "../../ProxyFunctionAzure"
 
 # KeyVault
 keyvault_name                               = "kv-blameless-splunk19111"
