@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Response struct {
@@ -17,17 +19,21 @@ type Fetch struct {
 	Params string
 }
 
-func NewFetch(values map[string]string) (*Fetch, error) {
-	path, ok := values["api_path"]
-	if !ok {
+func NewFetch(c *gin.Context) (*Fetch, error) {
+
+	path := c.Query("api_path")
+	if c.Query("api_path") != "" {
+		// path := c.Query("api_path")
+	} else {
 		return nil, fmt.Errorf("empty path for Prometheus: %s", path)
 	}
+
 	params := url.Values{}
-	for k, v := range values {
+	for k, v := range c.Request.URL.Query() {
 		if k == "api_path" {
 			continue
 		}
-		params.Add(k, v)
+		params.Add(k, v[0])
 	}
 	return &Fetch{
 		Path:   path,

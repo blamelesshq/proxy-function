@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 type Response struct {
@@ -36,11 +37,11 @@ func NewFetch(values map[string]string) (*Fetch, error) {
 }
 
 func (f *Fetch) Do() (*Response, error) {
-	req, err := http.NewRequest(http.MethodGet, DefaultConfig.PrometheusURL, nil)
+	req, err := http.NewRequest(http.MethodGet, os.Getenv("PrometheusURL") /*DefaultConfig.PrometheusURL*/, nil)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create Prometheus request: %s", err)
 	}
-	req.SetBasicAuth(DefaultConfig.Login, DefaultConfig.Password)
+	req.SetBasicAuth(os.Getenv("Login") /*DefaultConfig.Login*/, os.Getenv("Password") /*DefaultConfig.Password*/)
 	req.URL.Path = f.Path
 	req.URL.RawQuery = f.Params
 	fmt.Println("URL", req.URL.String())

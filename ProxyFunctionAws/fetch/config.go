@@ -13,6 +13,7 @@ var isGCP = os.Getenv("IS_GCP")
 
 func init() {
 	fmt.Println("starting init config")
+	fmt.Println(isGCP)
 	if isGCP == "" {
 		fmt.Println("init AWS config")
 		// use kms for encrypt aws variables
