@@ -3,44 +3,7 @@ package fetch
 import (
 	"encoding/json"
 	"net/http"
-	"os"
-	"time"
-
-	"github.com/microsoft/ApplicationInsights-Go/appinsights"
 )
-
-type Sid struct {
-	Sid string
-}
-
-type Response struct {
-	StatusCode int
-	Data       *map[string]interface{}
-}
-
-func checkStringError(err string) {
-	client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
-	trace := appinsights.NewTraceTelemetry(err, appinsights.Error)
-	trace.Timestamp = time.Now()
-	client.Track(trace)
-	// false indicates that we should have this handle the panic, and
-	// not re-throw it.
-	defer appinsights.TrackPanic(client, false)
-	panic(err)
-}
-
-func checkError(err error) {
-	if err != nil {
-		client := appinsights.NewTelemetryClient(os.Getenv("APPINSIGHTS_INSTRUMENTATIONKEY"))
-		trace := appinsights.NewTraceTelemetry(err.Error(), appinsights.Error)
-		trace.Timestamp = time.Now()
-		client.Track(trace)
-		// false indicates that we should have this handle the panic, and
-		// not re-throw it.
-		defer appinsights.TrackPanic(client, false)
-		panic(err)
-	}
-}
 
 func ProcessFetch(params map[string]string) (int, string) {
 	fetch, err := NewFetch(params)

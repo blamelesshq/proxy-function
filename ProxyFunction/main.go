@@ -7,25 +7,15 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/blamelesshq/lambda-prometheus/fetch"
+	fetch "github.com/blamelesshq/lambda-prometheus/fetch"
 )
-
-type FunctionObj struct {
-	Route       string
-	Url         string
-	AccessToken string
-}
-
-type RouteConfigObj struct {
-	Functions []FunctionObj
-}
 
 func main() {
 	listenAddr := ":8080"
 	if val, ok := os.LookupEnv("FUNCTIONS_CUSTOMHANDLER_PORT"); ok {
 		listenAddr = ":" + val
 	}
-	var routeConfigObj RouteConfigObj
+	var routeConfigObj fetch.RouteConfigObj
 	err := json.Unmarshal([]byte(os.Getenv("RouteConfig")), &routeConfigObj)
 
 	if err != nil {
@@ -33,7 +23,6 @@ func main() {
 	}
 
 	for _, element := range routeConfigObj.Functions {
-		// element is the element from someSlice for where we are
 		http.HandleFunc(element.Route, fetch.HandleRequestAzure)
 	}
 
