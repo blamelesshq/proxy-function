@@ -57,6 +57,7 @@ resource "azurerm_function_app" "funcdeploy" {
       "FUNCTIONS_WORKER_RUNTIME" = "custom"
       "APPINSIGHTS_INSTRUMENTATIONKEY" = "${azurerm_application_insights.funcdeploy.instrumentation_key}"
       "RouteConfig": "${var.RouteConfig}"
+      "CLOUD_PROVIDER": "Azure"
       # "SPLUNK_URL" = "${var.SPLUNK_URL}"
       # "SPLUNK_ACCESS_TOKEN" = "${var.SPLUNK_ACCESS_TOKEN}"
       # "CLOUD_PLATFORM" = "${var.CLOUD_PLATFORM}"
