@@ -62,18 +62,29 @@ func ProcessFetchAws(c *gin.Context) { //(int, string) {
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	resp, err := fetch.DoAws()
+
+	resp, err := func() (*Response, error) {
+		if fetch.Type == "Splunk" {
+			return fetch.DoSplunk()
+		} else {
+			return fetch.DoAws()
+		}
+	}()
+	// resp, err := fetch.DoAws()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 	b, err := json.Marshal(resp.Data)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	var raw map[string]interface{}
 	if err := json.Unmarshal(b, &raw); err != nil {
-		panic(err)
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 	fmt.Println(raw)
 	c.JSON(http.StatusOK, raw)
@@ -96,20 +107,10 @@ func HandleRequestAWS(ctx context.Context, request events.APIGatewayProxyRequest
 		for _, element := range routeConfigObj.Functions {
 			// element is the element from someSlice for where we are
 			r.GET(element.Route, ProcessFetchAws)
-			// http.HandleFunc(element.Route, fetch.HandleRequestAzure)
 		}
-		// r.GET("/pets", getPets)
-		// r.GET("/pets/:id", getPet)
-		// r.POST("/pets", createPet)
 
 		ginLambda = ginadapter.New(r)
 	}
-
-	// code, body := ProcessFetch(request.QueryStringParameters)
-	// return &events.APIGatewayProxyResponse{
-	// 	StatusCode: code,
-	// 	Body:       body,
-	// }, nil
 
 	return ginLambda.ProxyWithContext(ctx, request)
 }
