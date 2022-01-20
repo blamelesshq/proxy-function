@@ -1,5 +1,6 @@
 provider "aws" {
   profile    = "default"
+  region = "us-west-1"
 }
 
 data "aws_region" "current" {}
@@ -7,7 +8,7 @@ data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 
 resource "aws_iam_role" "iam_for_lambda" {
-  name = "iam_for_lambda"
+  name = "${var.iam_for_lambda_name}"
 
   assume_role_policy = <<EOF
 {
@@ -27,7 +28,7 @@ EOF
 }
 
 resource "aws_api_gateway_rest_api" "api_gateway_for_lambda" {
-  name = "api_for_prometheus_lambda"
+  name = "${var.aws_api_gateway_rest_api}"
 
   endpoint_configuration {
     types = ["REGIONAL"]
@@ -37,13 +38,13 @@ resource "aws_api_gateway_rest_api" "api_gateway_for_lambda" {
 resource "aws_api_gateway_resource" "api_resource_for_api_gateway" {
   rest_api_id = "${aws_api_gateway_rest_api.api_gateway_for_lambda.id}"
   parent_id   = "${aws_api_gateway_rest_api.api_gateway_for_lambda.root_resource_id}"
-  path_part = "demo"
+  path_part = "{proxy+}"
 }
 
 resource "aws_api_gateway_method" "api_method_for_api_resource" {
   rest_api_id   = "${aws_api_gateway_rest_api.api_gateway_for_lambda.id}"
   resource_id   = "${aws_api_gateway_resource.api_resource_for_api_gateway.id}"
-  http_method   = "POST"
+  http_method   = "ANY"
   authorization = "NONE"
   api_key_required = true
 }
@@ -52,7 +53,7 @@ resource "aws_api_gateway_integration" "integration" {
   rest_api_id             = "${aws_api_gateway_rest_api.api_gateway_for_lambda.id}"
   resource_id             = "${aws_api_gateway_resource.api_resource_for_api_gateway.id}"
   http_method             = "${aws_api_gateway_method.api_method_for_api_resource.http_method}"
-  integration_http_method = "POST"
+  integration_http_method = "ANY"
   type                    = "AWS_PROXY"
   uri                     = "${aws_lambda_function.prometheus_lambda.invoke_arn}"
 }
@@ -66,31 +67,29 @@ resource "aws_lambda_permission" "apigw_lambda" {
 }
 
 resource "aws_lambda_function" "prometheus_lambda" {
-  filename      = "../../function.zip"
-  function_name = "prometheus_lambda"
+  filename      = "${var.code_dir}"
+  function_name = "${var.lambda_function_name}"
   role          = "${aws_iam_role.iam_for_lambda.arn}"
   handler       = "lambda"
-  source_code_hash = "${filebase64sha256("../../function.zip")}"
+  source_code_hash = "${filebase64sha256("${var.code_dir}")}"
   runtime = "go1.x"
-  depends_on = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.lambda_log_group", "aws_iam_role_policy_attachment.lambda_dkms"]
-  kms_key_arn = "${aws_kms_key.main.arn}"
+  depends_on = ["aws_iam_role_policy_attachment.lambda_logs", "aws_cloudwatch_log_group.lambda_log_group"]#, "aws_iam_role_policy_attachment.lambda_dkms"]
+  # kms_key_arn = "${aws_kms_key.main.arn}"
 
   environment {
     variables = {
-      PROMETHEUS_URL = "${var.prometheus_url}"
-      PROMETHEUS_LOGIN = "${aws_kms_ciphertext.prometheus_login.ciphertext_blob}"
-      PROMETHEUS_PASSWORD = "${aws_kms_ciphertext.prometheus_password.ciphertext_blob}"
+      RouteConfig = "${var.route_config}"
     }
   }
 }
 
 resource "aws_cloudwatch_log_group" "lambda_log_group" {
-  name              = "/aws/lambda/prometheus"
+  name              = "${var.aws_cloudwatch_log_group_name}"
   retention_in_days = 14
 }
 
 resource "aws_iam_policy" "lambda_logging" {
-  name        = "lambda_logging"
+  name        = "${var.lambda_logging_name}"
   path        = "/"
   description = "IAM policy for logging from a lambda"
 
@@ -112,28 +111,28 @@ resource "aws_iam_policy" "lambda_logging" {
 EOF
 }
 
-resource "aws_iam_policy" "lambda_kms" {
-  name = "lambda_kms_decrypt"
-  path = "/"
-  description = "IAM policy for decrypt env for a lambda"
+# resource "aws_iam_policy" "lambda_kms" {
+#   name = "${var.aws_iam_policy_name}"
+#   path = "/"
+#   description = "IAM policy for decrypt env for a lambda"
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": {
-    "Effect": "Allow",
-    "Action": [
-      "kms:DescribeKey",
-      "kms:GenerateDataKey",
-      "kms:Decrypt"
-    ],
-    "Resource": [
-      "${aws_kms_key.main.arn}"
-    ]
-  }
-}
-EOF
-}
+#   policy = <<EOF
+# {
+#   "Version": "2012-10-17",
+#   "Statement": {
+#     "Effect": "Allow",
+#     "Action": [
+#       "kms:DescribeKey",
+#       "kms:GenerateDataKey",
+#       "kms:Decrypt"
+#     ],
+#     "Resource": [
+#       "${aws_kms_key.main.arn}"
+#     ]
+#   }
+# }
+# EOF
+# }
 
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
@@ -141,10 +140,10 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
   policy_arn = "${aws_iam_policy.lambda_logging.arn}"
 }
 
-resource "aws_iam_role_policy_attachment" "lambda_dkms" {
-  role       = "${aws_iam_role.iam_for_lambda.name}"
-  policy_arn = "${aws_iam_policy.lambda_kms.arn}"
-}
+# resource "aws_iam_role_policy_attachment" "lambda_dkms" {
+#   role       = "${aws_iam_role.iam_for_lambda.name}"
+#   policy_arn = "${aws_iam_policy.lambda_kms.arn}"
+# }
 
 
 resource "aws_api_gateway_deployment" "deploy_api_gateway" {
@@ -154,11 +153,11 @@ resource "aws_api_gateway_deployment" "deploy_api_gateway" {
 }
 
 resource "aws_api_gateway_api_key" "aws_api_key_for_lambda_api" {
-  name="prometheus_lambda_key"
+  name="${var.aws_api_gateway_api_key}"
 }
 
 resource "aws_api_gateway_usage_plan" "aws_prometheus_lambda_plan" {
-  name="prometheus_lambda_plan"
+  name="${var.aws_api_gateway_usage_plan}"
 
   api_stages {
     api_id = "${aws_api_gateway_rest_api.api_gateway_for_lambda.id}"
@@ -172,17 +171,18 @@ resource "aws_api_gateway_usage_plan_key" "main" {
   usage_plan_id = "${aws_api_gateway_usage_plan.aws_prometheus_lambda_plan.id}"
 }
 
-resource "aws_kms_key" "main" {
-  description = "key for encrypt lambda Prometheus variables"
-  deletion_window_in_days = 7
-}
+# resource "aws_kms_key" "main" {
+#   description = "key for encrypt lambda Prometheus variables"
+#  is_enabled = true
+##   deletion_window_in_days = 7
+# }
 
-resource "aws_kms_ciphertext" "prometheus_login" {
-  key_id = "${aws_kms_key.main.key_id}"
-  plaintext = "${var.prometheus_login}"
-}
+# resource "aws_kms_ciphertext" "prometheus_login" {
+#   key_id = "${aws_kms_key.main.key_id}"
+#   plaintext = "${var.prometheus_login}"
+# }
 
-resource "aws_kms_ciphertext" "prometheus_password" {
-  key_id = "${aws_kms_key.main.key_id}"
-  plaintext = "${var.prometheus_password}"
-}
+# resource "aws_kms_ciphertext" "prometheus_password" {
+#   key_id = "${aws_kms_key.main.key_id}"
+#   plaintext = "${var.prometheus_password}"
+# }
