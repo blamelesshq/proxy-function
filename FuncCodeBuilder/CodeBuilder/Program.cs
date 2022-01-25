@@ -6,29 +6,46 @@ var yamlDeserializer = new YamlDotNet.Serialization.DeserializerBuilder()
     .WithNamingConvention(CamelCaseNamingConvention.Instance)
     .Build();
 
-var type = args[0];
-var proxyFunctionLocation = args[1];
+var cloudProvider = args[0];
 
+var type = args[1];
+var proxyFunctionLocation = args[2];
 var specFolderLocation = string.Empty;
+
+var myConfig = yamlDeserializer.Deserialize<RouteConfig>(File.ReadAllText($"{proxyFunctionLocation}/route-config.yaml"));
+string myConfigJsonFormat = JsonSerializer.Serialize(myConfig);
+myConfigJsonFormat = $"\"{myConfigJsonFormat.Replace("\"", "\\\"")}\"";
+
+if (cloudProvider.Equals("AWS"))
+{
+    specFolderLocation = args[3];
+    var parts = File.ReadAllLines($"{specFolderLocation}/terraform.tfvars");
+    var part = parts
+        .Select((item, index) => new { Item = item, Index = index })
+        .Where(c => c.Item.Contains("RouteConfig"))
+        .First();
+    parts[part.Index] = $"RouteConfig = \"{JsonSerializer.Serialize(myConfig).Replace("\"", "\\\"")}\"";
+
+    File.WriteAllLines($"{specFolderLocation}/terraform.tfvars", parts);
+    return;
+}
+
+
+
 var keyVaultName = string.Empty;
 var functionAppName = string.Empty;
 var funcName = string.Empty;
 
 if (type.Equals("ApiManagement"))
 {
-    specFolderLocation = args[2];
-    funcName = args[3];
+    specFolderLocation = args[3];
+    funcName = args[4];
 }
 else
 {
-    keyVaultName = args[2];
-    functionAppName = args[3];
+    keyVaultName = args[3];
+    functionAppName = args[4];
 }
-
-var myConfig = yamlDeserializer.Deserialize<RouteConfig>(File.ReadAllText($"{proxyFunctionLocation}/route-config.yaml"));
-
-string myConfigJsonFormat = JsonSerializer.Serialize(myConfig);
-myConfigJsonFormat = $"\"{myConfigJsonFormat.Replace("\"", "\\\"")}\"";
 
 ApiSpec? apiSpec = default;
 
