@@ -8,8 +8,7 @@ run:
 	docker run --name $(docker_name) $(docker_name):v1
 
 prepare-config-aws-linux:
-	cd ../FuncCodeBuilder/ProxyFuncRouteUpdater/linux
-	ProxyFunctionRouteUpdater AWS test . ../deploy/aws2
+	../FuncCodeBuilder/ProxyFuncRouteUpdater/linux/ProxyFunctionRouteUpdater AWS test . ../deploy/aws2
 
 zip-aws:
 	# remove container if it exists. Ignore error when container not exist
