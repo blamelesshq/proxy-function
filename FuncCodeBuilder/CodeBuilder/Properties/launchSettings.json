@@ -11,6 +11,10 @@
     "FunctonApp": {
       "commandName": "Project",
       "commandLineArgs": "FunctionApp ../../Splunk"
+    },
+    "AWS": {
+      "commandName": "Project",
+      "commandLineArgs": "AWS test ../../../../../GenericProxyFunction  ../../../../../deploy/aws2"
     }
   }
 }
