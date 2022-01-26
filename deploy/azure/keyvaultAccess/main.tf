@@ -1,8 +1,3 @@
-provider "azurerm" {
-  version = "=2.47.0"
-  features {}
-}
-
 data "azurerm_client_config" "current" {}
 
 resource "azurerm_key_vault_access_policy" "keyvault" {

@@ -1,0 +1,6 @@
+azure_func_name        = "blamelesssplunk0912"
+key_vault_name         = "kv-blameless-splunk0912"
+resource_group_name    = "rg-blameless-splunk-0912"
+apimanagement_name     = "amblamelesssplunk0912"
+apimanagement_revision = "2"
+code_directory         = "../../ProxyFunction"

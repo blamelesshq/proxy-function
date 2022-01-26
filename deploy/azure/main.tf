@@ -1,3 +1,9 @@
+module "apiManagementSpecBuilder" {
+  source = "./apiManagementSpecBuilder"
+  azure_func_name = var.azure_func_name
+  code_directory  = var.code_directory
+}
+
 module "resourceGroup" {
   source = "./resourceGroup"
   resource_group_name               = var.resource_group_name
@@ -9,12 +15,6 @@ module "keyvault" {
   resource_group_name               = module.resourceGroup.resource_group_name
   location                          = var.location
   keyvault_name                     = var.keyvault_name
-  SPLUNK_URL                        = var.SPLUNK_URL
-  SPLUNK_ACCESS_TOKEN               = var.SPLUNK_ACCESS_TOKEN
-  # PROMETHEUS_URL                    = var.PROMETHEUS_URL
-  # RESTO_URL                         = var.RESTO_URL
-  # PROMETHEUS_LOGIN                  = var.PROMETHEUS_LOGIN
-  # PROMETHEUS_PASSWORD               = var.PROMETHEUS_PASSWORD
 } 
 
 module "function" {
@@ -29,14 +29,16 @@ module "function" {
   storage_account_replication_type  = var.storage_account_replication_type
   azure_func_name                   = var.azure_func_name
   CLOUD_PLATFORM                    = var.CLOUD_PLATFORM
-  SPLUNK_URL                        = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/SPLUNK-URL)"
-  SPLUNK_ACCESS_TOKEN               = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/SPLUNK-ACCESS-TOKEN)"
-  # PROMETHEUS_URL                    = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-URL)"
-  # RESTO_URL                         = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/RESTO-URL)"
-  # PROMETHEUS_LOGIN                  = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-LOGIN)"
-  # PROMETHEUS_PASSWORD               = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/PROMETHEUS-PASSWORD)"
+  RouteConfig                       = "@Microsoft.KeyVault(SecretUri=${module.keyvault.vault_uri}secrets/RouteConfig)"
   resource_group_id                 = module.resourceGroup.resource_group_id
   resource_group_name               = module.resourceGroup.resource_group_name
+}
+
+module "functionDeploy" {
+  source          = "./functionDeploy"
+  azure_func_name = module.function.functionapp_name
+  key_vault_name  = var.keyvault_name
+  code_directory  = var.code_directory
 }
 
 module "keyvaultAccess" {
@@ -52,19 +54,24 @@ module "apiManagement" {
   publisher_name                    = var.publisher_name
   admin_email                       = var.admin_email
   sku_name                          = var.sku_name
-  apimanagement_display_name        = var.apimanagement_display_name
   azure_func_name                   = module.function.name#var.azure_func_name
   apimanagement_name                = var.apimanagement_name
 }
 
+module "apiManagementImport" {
+  source              = "./apiManagementImport"
+  resource_group_name = module.resourceGroup.resource_group_name
+  apimanagement_name  = module.apiManagement.apimanagement_name
+}
+
 module "natGateway" {
   source                 = "./natGateway"
-  location               = var.location
-  resource_group_name    = module.resourceGroup.resource_group_name#var.resource_group_name
+  resource_group_name    = module.resourceGroup.resource_group_name
   natGateway_name        = "nat-${var.functionapp_name}"
   vnet_name              = "vnet-${var.functionapp_name}"
   subnet_name            = "subnet-${var.functionapp_name}"
   public_ip_name         = "ip-${var.functionapp_name}"
   subnet_delegation_name = "snetdel-${var.functionapp_name}"
   app_service_id         = module.function.functionapp_id
+  location               = var.location
 }

@@ -24,7 +24,8 @@ resource "azurerm_key_vault" "keyvault" {
       "get",
       "list",
       "set",
-      "delete"
+      "delete",
+      "purge",
     ]
 
     storage_permissions = [
@@ -39,17 +40,23 @@ resource "azurerm_key_vault" "keyvault" {
   # }
 }
 
-resource "azurerm_key_vault_secret" "SPLUNK_URL" {
-  name         = "SPLUNK-URL"
-  value        = var.SPLUNK_URL
+resource "azurerm_key_vault_secret" "RouteConfig" {
+  name         = "RouteConfig"
+  value        = var.RouteConfig
   key_vault_id = azurerm_key_vault.keyvault.id
 }
 
-resource "azurerm_key_vault_secret" "SPLUNK_ACCESS_TOKEN" {
-  name         = "SPLUNK-ACCESS-TOKEN"
-  value        = var.SPLUNK_ACCESS_TOKEN
-  key_vault_id = azurerm_key_vault.keyvault.id
-}
+# resource "azurerm_key_vault_secret" "SPLUNK_URL" {
+#   name         = "SPLUNK-URL"
+#   value        = var.SPLUNK_URL
+#   key_vault_id = azurerm_key_vault.keyvault.id
+# }
+
+# resource "azurerm_key_vault_secret" "SPLUNK_ACCESS_TOKEN" {
+#   name         = "SPLUNK-ACCESS-TOKEN"
+#   value        = var.SPLUNK_ACCESS_TOKEN
+#   key_vault_id = azurerm_key_vault.keyvault.id
+# }
 
 # resource "azurerm_key_vault_secret" "PROMETHEUS_URL" {
 #   name         = "PROMETHEUS-URL"

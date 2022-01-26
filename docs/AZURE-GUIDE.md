@@ -5,9 +5,10 @@ Deployment Guide for the Blameless Proxy function in Azure
 | Project          | Description                                                  |
 | ---------------- | ------------------------------------------------------------ |
 | Status           | Early Access phase (alpha)                                   |
-| Content          | This project provides a Terraform script with 6 Terraform modules to configure and deploy the required cloud infrastructure in Azure and the Blameless proxy function. |
-| Deployment steps | 1. Deploy all necessary Azure resources in one single Terraform command.<br>2. Deploy the Blameless proxy function code (Go) to the created Azure Function App. |
+| Content          | This project provides a Terraform script with 10 Terraform modules to configure and deploy the required cloud infrastructure in Azure and the Blameless proxy function. |
+| Deployment steps | 1. Deploy all necessary Azure resources in one single Terraform command.
 
+For more tech detail description on the deployment go to  [AZURE-INDEPTH-TECH-GUIDE](./AZURE-INDEPTH-TECH-GUIDE.md) document and [FuncCodeBuilder](./FuncCodeBuilder.md) documents.
 
 
 ## PREREQUISITES
@@ -73,15 +74,19 @@ The provided Terraform modules allows you to install the following Cloud infrast
 | ---- | ------------------- | ------------------------------------------------------------ |
 | 1    | Resource Group      | Unique name to group all these resources in Azure            |
 | 2    | Function App        | Host the the Blameless proxy function                        |
-| 3    | Key Vault           | Securely holds the credentials allowing a Blameless proxy function to connect to its target metric server |
-| 4    | Key Vault Access    | Required and deployed along with the Azure Key Vault resource |
-| 5    | API Management      | Routes HTTP traffic from your Blameless account to the appropriate Azure function. |
+| 3    | Function App (functionDeploy)       | Deploy Function App after it is created                        |
+| 4    | Function App (functionUpdate)       | Deploy Function App and API Management after the function is updated                        |
+| 5    | Key Vault           | Securely holds the credentials allowing a Blameless proxy function to connect to its target metric server |
+| 6    | Key Vault Access    | Required and deployed along with the Azure Key Vault resource |
+| 7    | API Management      | Routes HTTP traffic from your Blameless account to the appropriate Azure function. |
+| 8    | API Management (apiManagementSpecBuilder)     | Creates api management OpenApi Spec file based on route-config for the proxy function(s). |
+| 9    | API Management (apiManagementImport)     | Imports newly created OpenApi spec on already created Azure API Management instance |
 
 Optional Azure resources:
 
 | #    | Azure Resource Type | Description                                                  |
 | ---- | ------------------- | ------------------------------------------------------------ |
-| 6    | NAT Gateway         | Provides a single outbound IP address (behind a NAT Gateway), optionally needed to simplify any firewall rules (whitelist ingress IP address) that would be needed to allow the Blameless proxy function to send HTTP GET requests to the target metric server. |
+| 10    | NAT Gateway         | Provides a single outbound IP address (behind a NAT Gateway), optionally needed to simplify any firewall rules (whitelist ingress IP address) that would be needed to allow the Blameless proxy function to send HTTP GET requests to the target metric server. |
 
 
 
@@ -124,12 +129,7 @@ Go to the following **Terraform configuration file** and modify ALL values:
 | **KEY VAULT**                    | -                                                            |
 | keyvault_name                    | Unique key vault name (note 1)                               |
 |                                  | ***if connecting the Blameless proxy function to a Splunk endpoint:*** |
-| SPLUNK_URL                       | URL to a Splunk server (including used port)                 |
-| SPLUNK_ACCESS_TOKEN              | Splunk access token                                          |
-|                                  | ***if connecting the Blameless proxy function to a Prometheus endpoint:*** |
-| PROMETHEUS_URL                   | URL to a Prometheus server (including used port)             |
-| PROMETHEUS_LOGIN                 | Login name used by the Blameless proxy function to securely run Prometheus APIs |
-| PROMETHEUS_PASSWORD              | Password matching the above login name used by the Blameless proxy function to securely run Prometheus APIs |
+| RouteConfig                       | Placeholder. Need to be empty string at the beginning. "functionDeploy" module will update the value.                 |
 | **AZURE FUNCTION**               | -                                                            |
 | sku_tier                         | Azure function SKU tier (e.g. “Standard”)                    |
 | sku_size                         | Azure SKU size (e.g. S1)                                     |
@@ -151,13 +151,16 @@ Go to the following **Terraform configuration file** and modify ALL values:
 
 
 
-### Deploy your Azure resources using Terraform
+### Deploy your Azure resources and BlamelessProxyFunction using Terraform
 
 Go to the root of the Terraform configuration files:
 
 ```shell
 $ cd ./deploy/azure
 ```
+
+or with [Makefile](../ProxyFunction/Makefile) -
+```make deploy_azure```
 
 Initialize your working directory containing your Terraform configuration files
 
@@ -219,29 +222,6 @@ Prometheus		README-Splunk.md	README.md		Splunk			StaticFiles		deploy
 ```
 
 
-
-#### Deploy a Blameless proxy function for Splunk
-
-Go to the /Splunk directory
-
-```shell
-$ cd ./Splunk
-```
-
-Compile the main.go function (Linux):
-
-```shell
-$ env GOOS=linux GOARCH=amd64 go build main.go
-```
-
-Deploy the Blameless proxy function
-
-```shell
-$ func azure functionapp publish <function-app-name>
-```
-
-> Make sure to replace <function-app-name> with the name of the function your provided in the Terraform configuration file (see `azure_function_name`)
-
 #### Deploy a Blameless proxy function for Prometheus
 
 Go to the /Prometheus directory
@@ -269,6 +249,5 @@ $ func azure functionapp publish <function-app-name>
 
 
 == END OF DOCUMENT ==
-
 
 

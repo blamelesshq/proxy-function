@@ -1,8 +1,4 @@
-# https://github.com/terraform-providers/terraform-provider-azurerm/issues/7960
-provider "azurerm" {
-  version = "=2.47.0"
-  features {}
-}
+data "azurerm_client_config" "current" {}
 
 resource "azurerm_storage_account" "funcdeploy" {
   name                     = var.storage_account_name
@@ -60,8 +56,10 @@ resource "azurerm_function_app" "funcdeploy" {
       "WEBSITE_VNET_ROUTE_ALL"   = "1"
       "FUNCTIONS_WORKER_RUNTIME" = "custom"
       "APPINSIGHTS_INSTRUMENTATIONKEY" = "${azurerm_application_insights.funcdeploy.instrumentation_key}"
-      "SPLUNK_URL" = "${var.SPLUNK_URL}"
-      "SPLUNK_ACCESS_TOKEN" = "${var.SPLUNK_ACCESS_TOKEN}"
+      "RouteConfig": "${var.RouteConfig}"
+      "CLOUD_PROVIDER": "Azure"
+      # "SPLUNK_URL" = "${var.SPLUNK_URL}"
+      # "SPLUNK_ACCESS_TOKEN" = "${var.SPLUNK_ACCESS_TOKEN}"
       # "CLOUD_PLATFORM" = "${var.CLOUD_PLATFORM}"
       # "PROMETHEUS_PASSWORD" = "${var.PROMETHEUS_PASSWORD}"
       # "PROMETHEUS_LOGIN" = "${var.PROMETHEUS_LOGIN}"

@@ -10,7 +10,7 @@ The Blameless proxy function and its supporting cloud infrastructure (see cloud 
 
 | Cloud Provider | Status               |
 | -------------- | -------------------- |
-| AWS            | Experimental         |
+| AWS            | Early access (alpha) |
 | GCP            | Experimental         |
 | Azure          | Early access (alpha) |
 
@@ -45,11 +45,12 @@ Go to the deployment guide corresponding to the public cloud provider where you 
 
 | Cloud Provider | Guide                                                        |
 | -------------- | ------------------------------------------------------------ |
-| AWS            | Deploying the Blameless proxy function to AWS (under construction) |
+| AWS            | [Deploying the Blameless proxy function to AWS](./docs/AWS-GUIDE.md) |
 | GCP            | Deploying the Blameless proxy function to GCP (under construction) |
-| Azure          | [Deploying the Blameless proxy function to Azure](https://github.com/blamelesshq/proxy-function/blob/master/docs/AZURE-GUIDE.md) |
+| Azure          | [Deploying the Blameless proxy function to Azure](./docs/AZURE-GUIDE.md) |
 
-
+## How to contribute
+Please check the [How To Contributate](./docs/HOW-TO-CONTRIBUTE.md) document and contact Contributors if you have any additional questions.
 
 ## Contributors
 

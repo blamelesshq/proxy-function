@@ -1,10 +1,10 @@
 openapi: 3.0.1
 info:
-  title: 340920211func
-  description: Import from "310920211func" Function App
+  title: blamelesssplunk0912
+  description: Import from blamelesssplunk0912 Function App
   version: '1.0'
 servers:
-  - url: https://310920211func.azurewebsites.net/api
+- url: https://blamelesssplunk0912.azurewebsites.net/api
 paths:
   /fetch:
     get:
@@ -12,7 +12,28 @@ paths:
       operationId: get-fetch
       responses:
         '200':
-          description: 
+          description: test
+  /fetch3:
+    get:
+      summary: fetch3
+      operationId: get-fetch3
+      responses:
+        '200':
+          description: test
+  /fetch4:
+    get:
+      summary: fetch4
+      operationId: get-fetch4
+      responses:
+        '200':
+          description: test
+  /prometheus-5:
+    get:
+      summary: prometheus-5
+      operationId: get-prometheus-5
+      responses:
+        '200':
+          description: test
 components:
   securitySchemes:
     apiKeyHeader:
@@ -24,5 +45,5 @@ components:
       name: subscription-key
       in: query
 security:
-  - apiKeyHeader: [ ]
-  - apiKeyQuery: [ ]
+- apiKeyHeader: []
+- apiKeyQuery: []
