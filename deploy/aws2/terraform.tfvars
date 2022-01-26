@@ -1,6 +1,6 @@
 lambda_env = {
-RouteConfig = "test"
-CLOUD_ENVIRONMENT = "AWS"
+    RouteConfig = "test"
+    CLOUD_ENVIRONMENT = "AWS"
 }
 lambda_handler = "lambda"
 lambda_runtime = "go1.x"
