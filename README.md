@@ -10,7 +10,7 @@ The Blameless proxy function and its supporting cloud infrastructure (see cloud 
 
 | Cloud Provider | Status               |
 | -------------- | -------------------- |
-| AWS            | Experimental         |
+| AWS            | Early access (alpha) |
 | GCP            | Experimental         |
 | Azure          | Early access (alpha) |
 
