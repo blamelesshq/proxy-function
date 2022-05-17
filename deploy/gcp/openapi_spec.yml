@@ -9,24 +9,32 @@ schemes:
 produces:
   - application/json
 paths:
-  /fetch:
+  /proxy-function:
     get:
       summary: Greet a user
       operationId: fetch
       x-google-backend:
-        address: ${function_url}/HandleRequestGCP
+        address: ${function_url}/proxy-function
         protocol: h2
       responses:
         '200':
           description: A successful response
           schema:
             type: string
+        "401":
+           $ref: '#/responses/UnauthorizedError'
+responses:
+  UnauthorizedError:
+    description: API key is missing or invalid
+    headers:
+      WWW_Authenticate:
+        type: string
 
 securityDefinitions:
   # This section configures basic authentication with an API key.
   api_key:
     type: "apiKey"
-    name: "key"
-    in: "query"
+    name: "x-api-key"
+    in: "header"
 security:
   - api_key: []

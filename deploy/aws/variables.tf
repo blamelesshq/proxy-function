@@ -1,84 +1,87 @@
-# variable "prometheus_url" {
-#   type = string
-#   description = "URL to prometheus"
-# }
-
-# variable "prometheus_login" {
-#   type = string
-#   description = "Login for Prometheus"
-# }
-
-# variable "prometheus_password" {
-#   type = string
-#   description = "Password for Prometheus"
-# }
-
-variable "route_config" {
-  type = string
-  description = "Route Config"
+####################
+# Tags
+####################
+variable "project" {
+  description = "Project name for tags and resource naming"
 }
 
-variable "lambda_function_name" {
-  type = string
-  description = "Lambda Function Name"
-  default = "prometheus_lambda_2"
+variable "stage_name" {
+  description = "The stage name(production/staging/etc..)"
 }
 
-variable "aws_cloudwatch_log_group_name" {
-  type = string
-  description = "Cloud Watch Log Group Name"
-  default = "/aws/lambda/prometheus"
+variable "region" {
+  description = "The AWS region, e.g., eu-west-1"
 }
 
-variable "aws_iam_policy_name" {
-  type = string
-  description = "IAM Policy name"
-  default = "lambda_kms_decrypt"
-} 
-
-variable "aws_api_gateway_api_key" {
-  type = string
-  description = "Api Gateway API Key"
-  default = "prometheus_lambda_key"
+####################
+# Lambda
+####################
+variable "lambda_name" {
+  description = "The name of the lambda function"
 }
 
-variable "aws_api_gateway_usage_plan" {
-  type = string
-  description = "Api Gateway Usage Plan"
-  default = "prometheus_lambda_plan"
+variable "lambda_runtime" {
+  description = "The runtime of the lambda function"
 }
 
-variable "aws_api_gateway_rest_api" {
-  type = string
-  description = "Api Gateway rest api"
-  default = "api_for_prometheus_lambda"
+variable "lambda_memory" {
+  description = "The memory size of the lambda function"
+  default     = 128
 }
 
-variable "code_dir" {
-  type = string
-  description = "Code directory"
-  default = "../../ProxyFunctionAws/function.zip"
+variable "lambda_timeout" {
+  description = "The timeout of the lambda function"
+  default     = 3
 }
 
-variable "api_gateway_deploy_name" {
-  type = string
-  description = "Deployment name for API gateway"
+variable "lambda_package" {
+  description = "The package file name"
+  default     = "package.zip"
 }
 
-variable "iam_role_name" {
-  type = string
-  description = "IAM role name"
-  default = "IAM for lambda name"
+variable "lambda_handler" {
+  description = "The handler name of the lambda function"
 }
 
-variable "lambda_logging_name" {
-  type = string
-  description = "Lambda logging name"
-  default = "lambda_logging"
+variable "lambda_env" {
+  description = "The list of environment variables"
+  type        = map
+  default     = {}
 }
 
-variable "iam_for_lambda_name" {
-  type = string
-  description = "iam_for_lambda_name"
-  default = "lambda_logging_1"
+variable "lambda_tags" {
+  description = "Tags used for the AWS Lambda resources"
+  type        = map
+  default     = {}
+}
+
+variable lambda_security_group_ids {
+  description = "VPC security group IDs."
+  default     = []
+  type        = list
+}
+
+variable lambda_subnet_ids {
+  description = "VPC subnet IDs."
+  default     = []
+  type        = list
+}
+
+####################
+# API Gateway
+####################
+variable "binary_type" {
+  description = "The list of binary media types supported by the RestApi"
+  type        = list
+  default     = ["*/*"]
+}
+
+variable "minimum_compression_size" {
+  description = "The minimum response size to compress for the REST API"
+  default     = 0
+}
+
+variable "method" {
+  description = "The HTTP method for the REST API"
+  default     = "ANY"
 }

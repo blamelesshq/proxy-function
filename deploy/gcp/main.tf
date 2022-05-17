@@ -1,35 +1,48 @@
+terraform {
+  backend "gcs" {
+    bucket  = "cfd-terraform"
+    prefix  = ""
+  }
+}
+
 provider "google" {
-  project     = "${var.project}"
+  project = "${var.project}"
   region = "${var.region}"
 }
 
+locals {
+  api_gateway_url = google_cloud_run_service.default.status[0].url
+}
 
 resource "google_storage_bucket" "bucket" {
-  name = "source-code-prometheus-fetch"
+  name = "proxy-function-source"
+  location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
   name   = "function_gcp.zip"
   bucket = google_storage_bucket.bucket.name
-  source = "../../function_gcp.zip"
+  source = "./function_gcp.zip"
 }
 
 resource "google_cloudfunctions_function" "function" {
-  name        = "fetch-prometheus-data"
-  description = "My function"
-  runtime     = "go111"
+  name        = "proxy-function"
+  description = "blameless-proxy-function"
+  runtime     = "go116"
+  region = "${var.region}"
 
   available_memory_mb   = 128
   source_archive_bucket = google_storage_bucket.bucket.name
   source_archive_object = google_storage_bucket_object.archive.name
   trigger_http          = true
-  entry_point           = "HandleRequestGCP"
+  entry_point           = "HandleQuery"
 
   environment_variables = {
-    PROMETHEUS_LOGIN="${var.prometheus_login}"
-    PROMETHEUS_URL="${var.prometheus_url}"
-    PROMETHEUS_PASSWORD="${var.prometheus_password}"
-    CLOUD_PLATFORM="GCP"
+    DATA_SOURCE_USERNAME="${var.data_source_username}"
+    DATA_SOURCE_URL="${var.data_source_url}"
+    DATA_SOURCE_PASSWORD="${var.data_source_password}"
+    FUNCTION_ACCESS_TOKEN="${var.access_token}"
+    FUNCTION_TYPE="${var.data_source_type}"
   }
 }
 
@@ -39,7 +52,6 @@ resource "google_cloudfunctions_function_iam_member" "invoker" {
   cloud_function = google_cloudfunctions_function.function.name
 
   role   = "roles/cloudfunctions.invoker"
-  # member = "serviceAccount:${google_service_account.run_account.email}"
   member = "allUsers"
 }
 
@@ -54,30 +66,38 @@ resource "google_endpoints_service" "openapi_service" {
     }
   )
 
-  depends_on = ["google_cloud_run_service.default"]
+  # depends_on = [google_cloud_run_service.default]
 
-  provisioner "local-exec" {
-    command = "gcloud beta run services update ${google_cloud_run_service.default.name} --set-env-vars ENDPOINTS_SERVICE_NAME=${self.service_name} --platform=managed --region=${var.region} --project=${var.project} --quiet"
-  }
+  # provisioner "local-exec" {
+  #   command = "gcloud beta run services update ${google_cloud_run_service.default.name} --set-env-vars ENDPOINTS_SERVICE_NAME=${self.service_name} --platform=managed --region=${var.region} --project=${var.project}"
+  # }
 }
+
+# resource "google_project_service" "api-project-service" {
+#   service = google_endpoints_service.openapi_service.service_name
+#   project = var.project_id
+#   depends_on = [google_endpoints_service.openapi_service]
+# }
 
 resource "google_cloud_run_service" "default" {
   location = "${var.region}"
   name     = "api-gateway-v-${var.api_version_major}-${var.api_version_minor}"
+  autogenerate_revision_name=true
+
+  # depends_on = [google_endpoints_service.openapi_service]
 
   template {
     spec {
-      # TODO(illia-korotia): with custom service_account_name we get error. I wait a response to my issue.
       # service_account_name = google_service_account.run_account.email
       containers {
         image = "gcr.io/endpoints-release/endpoints-runtime-serverless:2"
+        env {
+          name = "ENDPOINTS_SERVICE_NAME"
+          value = "${google_endpoints_service.openapi_service.service_name}"
+        }        
       }
     }
   }
-}
-
-locals {
-  api_gateway_url = google_cloud_run_service.default.status[0].url
 }
 
 resource "google_cloud_run_service_iam_policy" "noauth" {
@@ -88,8 +108,14 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
+# resource "google_project_iam_member" "editor" {
+#   project = var.project
+#   role    = "roles/editor"
+#   member  = "serviceAccount:${google_service_account.run_account.email}"
+# }
+
 # resource "google_service_account" "run_account" {
-#   account_id   = "osdu-gcp-sa"
+#   account_id   = "run-account"
 #   display_name = "Account for GCP RUN services"
 # }
 

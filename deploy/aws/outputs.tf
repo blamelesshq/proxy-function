@@ -1,10 +1,23 @@
-output "deploy_api_geteway_url" {
-  value = "${aws_api_gateway_deployment.deploy_api_gateway.invoke_url}/${var.api_gateway_deploy_name}"
-  description = "Use this URL for fetch a data from the Prometheus"
+output "api_url" {
+  value = module.api.url
 }
 
-output "api_key" {
-  value = "${aws_api_gateway_api_key.aws_api_key_for_lambda_api.value}"
-  description = "Use this token in each a request to the URL Prometheus"
-  sensitive = true
+output "api_methods" {
+  value = module.api.http_method
+}
+
+output "lambda_name" {
+  value = module.lambda.name
+}
+
+output "lambda_arn" {
+  value = module.lambda.arn
+}
+
+output "lambda_role" {
+  value = module.lambda.role_name
+}
+
+output "lambda_role_id" {
+  value = module.lambda.role_id
 }

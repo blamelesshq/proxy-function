@@ -24,3 +24,10 @@ main
 tfplan
 terraform-provider-*
 *.hcl
+
+*.tfvars
+*.tfvars.json
+
+**/vendor/**
+
+.DS_Store
