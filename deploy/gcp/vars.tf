@@ -42,3 +42,8 @@ variable "api_version_major" {
   type= string
   description = "API major version"
 }
+
+variable "service_account_credentials" {
+  type= string
+  description = "Path to JSON credentials file for Terrraform Service Acccount"
+}

@@ -3,7 +3,6 @@ info:
   title: Cloud Endpoints + GCF
   description: Sample API on Cloud Endpoints with a Google Cloud Functions backend
   version: 1.0.0
-host: ${host}
 schemes:
   - https
 produces:
@@ -14,7 +13,7 @@ paths:
       summary: Greet a user
       operationId: fetch
       x-google-backend:
-        address: ${function_url}/proxy-function
+        address: ${function_url}
         protocol: h2
       responses:
         '200':
@@ -31,7 +30,6 @@ responses:
         type: string
 
 securityDefinitions:
-  # This section configures basic authentication with an API key.
   api_key:
     type: "apiKey"
     name: "x-api-key"

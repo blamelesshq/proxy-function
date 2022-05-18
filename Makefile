@@ -10,7 +10,8 @@ gcp:
 	zip -r ../../deploy/gcp/function_gcp.zip ./*
 
 	cd ./deploy/gcp && \
-	terraform apply
+	terraform apply && \
+	printf "api_key = %s\n\n" $(shell cd ./deploy/gcp && terraform output -raw api_key)
 
 	rm ./deploy/gcp/function_gcp.zip
 	
