@@ -11,15 +11,22 @@ To deploy the proxy function to Google Cloud (GCP), you will need to install the
 ### Google Could APIs
 
 To properly deploy the proxy function the following APIs need to be enabled:
+- API Gateway API
+- Cloud Build API
+- Cloud Functions API
 - Cloud Resource Manager API
 - IAM Service Account Credentials API
 - Identity and Access Management (IAM) API
+- Service Control API
+- Service Management API
+- Service Usage API
 
 ### Google Cloud Service Account
 
 To deploy the necessary resources, the deployment needs to happen from a service account. The service account will need the following permissions:
 - Editor (or specific permissions to deploy the [resources](#resources) listed below)
 - Service Account Token Creator
+- Cloud Functions Admin
 
 ## Setup
 
@@ -54,7 +61,7 @@ This will prepare the function and then ask for some information:
 
 ### Google Cloud Information
 
-Once the `make gcp` command has run, the Terraform provider will output the URL to the API Gateway as well as the API key needed to access the gateway.
+Once the `make gcp` command has run, the Terraform provider will output the URL to the API Gateway. To get the API key needed to access the gateway, run the command `make gcp-key` and that will output the necessary key.
 
 ### Blameless Setup
 

@@ -78,6 +78,8 @@ resource "google_api_gateway_api_config" "api_cfg" {
   project              = var.project
   display_name         = local.display_name
 
+  depends_on = [ google_api_gateway_api.api_gw ]
+
   openapi_documents {
     document {
       path     = "./openapi_spec.yml"
@@ -105,12 +107,17 @@ resource "google_api_gateway_gateway" "gw" {
   gateway_id   = local.gateway_id
   display_name = local.display_name
 
-  depends_on   = [google_api_gateway_api_config.api_cfg]
+  depends_on   = [ google_api_gateway_api_config.api_cfg ]
 }
 
 resource "google_project_service" "api_gateway" {
   project = var.project
   service = google_api_gateway_api.api_gw.managed_service
+
+  depends_on = [
+    google_api_gateway_api.api_gw,
+    google_api_gateway_gateway.gw
+  ]
 
   timeouts {
     create = "30m"
@@ -133,11 +140,15 @@ resource "google_project_service" "api_keys" {
 }
 
 resource "google_apikeys_key" "proxy-function-key" {
-  name         = "proxy-function-key"
+  name         = "proxy-function-key-${google_api_gateway_api_config.api_cfg.id}"
   display_name = "Proxy Function Key"
   project      = var.project
 
-  depends_on = [ google_project_service.api_keys ]
+  depends_on = [
+    google_project_service.api_keys,
+    google_api_gateway_api_config.api_cfg,
+    google_api_gateway_api.api_gw
+  ]
 
   restrictions {
     api_targets {
