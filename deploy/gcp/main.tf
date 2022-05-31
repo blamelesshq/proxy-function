@@ -9,7 +9,7 @@ locals {
   api_id               = "proxy-function-gateway"
   gateway_id           = "proxy-function-gateway"
   display_name         = "Proxy Function Gateway"
-  openapi_spec         = templatefile("./openapi_spec.yml", { function_url = google_cloudfunctions_function.function.https_trigger_url })
+  openapi_spec         = templatefile("${path.module}/openapi_spec.yml", { function_url = google_cloudfunctions_function.function.https_trigger_url })
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -81,7 +81,7 @@ resource "google_api_gateway_api_config" "api_cfg" {
 
   openapi_documents {
     document {
-      path     = "${path.module}/openapi_spec.yml"
+      path     = "./openapi_spec.yml"
       contents = base64encode(local.openapi_spec)
     }
   }
