@@ -81,7 +81,7 @@ resource "google_api_gateway_api_config" "api_cfg" {
 
   openapi_documents {
     document {
-      path     = "./openapi_spec.yml"
+      path     = "${path.module}/openapi_spec.yml"
       contents = base64encode(local.openapi_spec)
     }
   }
