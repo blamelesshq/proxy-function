@@ -30,7 +30,6 @@ variable "proxy_service_account" {
   default     = "proxy-function-invoker"
   description = "Service account name for proxy service"
   type        = string
-
 }
 
 variable "data_source_url" {
@@ -59,7 +58,7 @@ variable "data_source_type" {
   }
 }
 
-variable "vpc_acccess_connector" {
+variable "vpc_connector" {
   default     = null
   description = "The VPC Network Connector that this cloud function can connect to. It should be set up as fully-qualified URI."
   nullable    = true
