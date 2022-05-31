@@ -33,7 +33,7 @@ resource "google_cloudfunctions_function" "function" {
   runtime     = "go116"
   region      = var.region
 
-  vpc_connector = var.vpcconnector
+  vpc_connector = var.vpc-connector
 
   available_memory_mb   = 128
   source_archive_bucket = google_storage_bucket.bucket.name
