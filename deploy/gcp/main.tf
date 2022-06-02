@@ -1,7 +1,18 @@
+// https://github.com/hashicorp/terraform-provider-archive/issues/39#issuecomment-858476964
+resource "null_resource" "trigger" {
+  triggers = {
+    hash = fileexists("${path.module}/function_gcp.zip") && filesha256("${path.module}/function_gcp.zip") || 0
+  }
+}
+
 data "archive_file" "function" {
   type        = "zip"
   source_dir  = "${path.module}/../../src/gcp/"
   output_path = "${path.module}/function_gcp.zip"
+
+  depends_on = [
+    null_resource.trigger
+  ]
 }
 
 locals {
