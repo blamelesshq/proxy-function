@@ -15,6 +15,10 @@ locals {
 resource "google_storage_bucket" "bucket" {
   name     = var.proxy_bucket_name
   location = var.proxy_bucket_location
+
+  uniform_bucket_level_access = true 
+
+  force_destroy = true
 }
 
 resource "google_storage_bucket_object" "archive" {
