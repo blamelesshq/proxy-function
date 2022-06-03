@@ -35,7 +35,7 @@ resource "google_storage_bucket" "bucket" {
 resource "google_storage_bucket_object" "archive" {
   name   = "function_gcp.zip"
   bucket = google_storage_bucket.bucket.name
-  source = "./function_gcp.zip"
+  source = "${path.module}/function_gcp.zip"
 
   depends_on = [
     data.archive_file.function
