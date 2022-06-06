@@ -83,6 +83,8 @@ resource "google_api_gateway_api" "api_gw" {
   api_id       = local.api_id
   project      = var.project_id
   display_name = local.display_name
+
+  labels = {}
 }
 
 resource "google_api_gateway_api_config" "api_cfg" {
