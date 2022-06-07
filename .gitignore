@@ -28,6 +28,6 @@ terraform-provider-*
 *.tfvars
 *.tfvars.json
 
-**/vendor/**
+#**/vendor/**
 
 .DS_Store
