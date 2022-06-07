@@ -3,8 +3,8 @@ output "api_url" {
   description = "Use this URL for fetch a data from the Prometheus via API RUN function"
 }
 
-output "api_key" {
-  value       = google_apikeys_key.proxy_function_key.key_string
-  description = "API key to access function"
-  sensitive   = true
-}
+# output "api_key" {
+#   value       = google_apikeys_key.proxy_function_key.key_string
+#   description = "API key to access function"
+#   sensitive   = true
+# }
