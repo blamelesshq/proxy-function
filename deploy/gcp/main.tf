@@ -156,6 +156,8 @@ resource "google_project_service" "api_keys" {
 }
 
 resource "google_apikeys_key" "proxy_function_key" {
+  provider = google-beta
+  
   name         = "proxy-function-key-${google_api_gateway_api_config.api_cfg.id}"
   display_name = "Proxy Function Key"
   project      = var.project_id
