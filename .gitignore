@@ -31,3 +31,5 @@ terraform-provider-*
 #**/vendor/**
 
 .DS_Store
+
+src/**/vendor
