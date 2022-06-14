@@ -8,6 +8,11 @@ variable "region" {
   type        = string
 }
 
+variable "gh_token" {
+  description = "GitHub PAT for access to private repo releases. Remove before making repo public"
+  type        = string
+}
+
 variable "proxy_bucket_name" {
   default     = "proxy-function-source"
   description = "Bucket to create and host proxy function"
@@ -23,6 +28,12 @@ variable "proxy_bucket_location" {
 variable "proxy_function_name" {
   default     = "proxy-function"
   description = "A user-defined name of the function. Function names must be unique globally"
+  type        = string
+}
+
+variable "proxy_function_version" {
+  default     = "0.0.1"
+  description = "Version of proxy function to get from GitHub releases"
   type        = string
 }
 
