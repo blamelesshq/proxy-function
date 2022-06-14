@@ -7,12 +7,7 @@ setup-gcp:
 gcp:
 	cd ./src/gcp && \
 	go mod vendor && \
-	zip -r ../../deploy/gcp/function_gcp.zip ./*
-
-	cd ./deploy/gcp && \
-	terraform applyx
-
-	rm ./deploy/gcp/function_gcp.zip
+	zip -r ../../function_gcp.zip ./*
 	
 .PHONY: gcp-key
 gcp-key:
