@@ -5,6 +5,10 @@ on:
       - 'master'
       - 'gcp-tf'
       - 'gcp-tf-cd'
+    paths:
+      - src/gcp
+      - src/shared
+
 env:
   target: gcp
   version: 0.0.0
