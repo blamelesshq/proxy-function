@@ -35,7 +35,7 @@ resource "google_storage_bucket_object" "archive" {
     null_resource.gcp_function
   ]
 
-  lifeycle {
+  lifecycle {
     replace_triggered_by = [
       null_resource.gcp_function.triggers.on_version_change
     ]
