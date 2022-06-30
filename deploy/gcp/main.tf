@@ -14,10 +14,6 @@ resource "google_storage_bucket" "bucket" {
   uniform_bucket_level_access = true 
 
   force_destroy = true
-
-  depends_on = [
-    null_resource.gcp_function
-  ]
 }
 
 resource "null_resource" "gcp_function" {
@@ -38,6 +34,12 @@ resource "google_storage_bucket_object" "archive" {
   depends_on = [
     null_resource.gcp_function
   ]
+
+  lifeycle {
+    replace_triggered_by = [
+      null_resource.gcp_function.triggers.on_version_change
+    ]
+  }
 }
 
 resource "google_cloudfunctions_function" "function" {
