@@ -11,7 +11,7 @@ resource "google_storage_bucket" "bucket" {
   name     = var.proxy_bucket_name
   location = var.proxy_bucket_location
 
-  uniform_bucket_level_access = true 
+  uniform_bucket_level_access = true
 
   force_destroy = true
 }
@@ -19,6 +19,7 @@ resource "google_storage_bucket" "bucket" {
 resource "null_resource" "gcp_function" {
   triggers = {
     on_version_change = "${var.proxy_function_version}"
+    always_run        = "${timestamp()}"
   }
 
   provisioner "local-exec" {
@@ -34,12 +35,6 @@ resource "google_storage_bucket_object" "archive" {
   depends_on = [
     null_resource.gcp_function
   ]
-
-  lifecycle {
-    replace_triggered_by = [
-      null_resource.gcp_function.triggers.on_version_change
-    ]
-  }
 }
 
 resource "google_cloudfunctions_function" "function" {
