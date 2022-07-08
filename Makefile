@@ -6,12 +6,10 @@ setup-gcp:
 .PHONY: gcp
 gcp:
 	cd ./src/gcp && \
-	go mod vendor && \
-	zip -r ../../function_gcp.zip ./*
+	go mod vendor
 	
-.PHONY: gcp-key
-gcp-key:
-	printf "api_key = %s\n\n" '$(shell cd ./deploy/gcp && terraform output --raw api_key)'
+	cd ./deploy/gcp && \
+	terraform apply
 
 .PHONY: destroy-gcp
 destroy-gcp:
