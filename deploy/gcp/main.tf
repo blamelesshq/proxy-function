@@ -1,5 +1,4 @@
 locals {
-  gh_token_header      = var.gh_token == "" ? "" : "-H \"Authorization: token ${var.gh_token}\""
   api_config_id_prefix = ""
   api_id               = "proxy-function-gateway"
   gateway_id           = "proxy-function-gateway"
@@ -8,6 +7,7 @@ locals {
 }
 
 resource "google_storage_bucket" "bucket" {
+  project  = var.project_id
   name     = var.proxy_bucket_name
   location = var.proxy_bucket_location
 
@@ -23,7 +23,7 @@ resource "null_resource" "gcp_function" {
   }
 
   provisioner "local-exec" {
-    command = "curl -Lo ${path.module}/function_gcp.zip ${local.gh_token_header} https://github.com/blamelesshq/proxy-function/releases/download/${var.proxy_function_version}/function_gcp.zip"
+    command = "curl -Lo ${path.module}/function_gcp.zip https://github.com/blamelesshq/proxy-function/releases/download/${var.proxy_function_version}/function_gcp.zip"
   }
 }
 
@@ -60,6 +60,7 @@ resource "google_cloudfunctions_function" "function" {
 }
 
 resource "google_service_account" "proxy_function_invoker" {
+  project      = var.project_id
   account_id   = var.proxy_service_account
   display_name = "Account for GCP RUN services"
 }
@@ -137,33 +138,3 @@ resource "google_project_service" "api_gateway" {
 
   disable_dependent_services = false
 }
-
-resource "google_project_service" "api_keys" {
-  project = var.project_id
-  service = "apikeys.googleapis.com"
-
-  timeouts {
-    create = "30m"
-    update = "40m"
-  }
-
-  disable_dependent_services = false
-}
-
-# resource "google_apikeys_key" "proxy_function_key" {
-#   name         = "proxy-function-key-${google_api_gateway_api_config.api_cfg.id}"
-#   display_name = "Proxy Function Key"
-#   project      = var.project_id
-
-#   depends_on = [
-#     google_project_service.api_keys,
-#     google_api_gateway_api_config.api_cfg,
-#     google_api_gateway_api.api_gw
-#   ]
-
-#   restrictions {
-#     api_targets {
-#       service = google_api_gateway_api.api_gw.managed_service
-#     }
-#   }
-# }
