@@ -4,7 +4,7 @@ Deployment Guide for the Blameless Proxy function in AWS
 
 | Project          | Description                                                  |
 | ---------------- | ------------------------------------------------------------ |
-| Status           | Early Access phase (alpha)                                   |
+| Status           | Experimental                                                 |
 | Content          | This project provides a Terraform script with 2 Terraform modules to configure and deploy the required cloud infrastructure in AWS and the Blameless proxy function. |
 | Deployment steps | 1. Deploy all necessary AWS resources in one single Terraform command.
 
