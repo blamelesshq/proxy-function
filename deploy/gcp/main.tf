@@ -1,21 +1,5 @@
-// https://github.com/hashicorp/terraform-provider-archive/issues/39#issuecomment-858476964
-resource "null_resource" "trigger" {
-  triggers = {
-    timestamp = timestamp()
-  }
-}
-
-data "archive_file" "function" {
-  type        = "zip"
-  source_dir  = "${path.module}/../../src/gcp/"
-  output_path = "${path.module}/function_gcp.zip"
-
-  depends_on = [
-    null_resource.trigger
-  ]
-}
-
 locals {
+  gh_token_header      = var.gh_token == "" ? "" : "-H \"Authorization: token ${var.gh_token}\""
   api_config_id_prefix = ""
   api_id               = "proxy-function-gateway"
   gateway_id           = "proxy-function-gateway"
@@ -27,9 +11,20 @@ resource "google_storage_bucket" "bucket" {
   name     = var.proxy_bucket_name
   location = var.proxy_bucket_location
 
-  uniform_bucket_level_access = true 
+  uniform_bucket_level_access = true
 
   force_destroy = true
+}
+
+resource "null_resource" "gcp_function" {
+  triggers = {
+    on_version_change = "${var.proxy_function_version}"
+    always_run        = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = "curl -Lo ${path.module}/function_gcp.zip ${local.gh_token_header} https://github.com/blamelesshq/proxy-function/releases/download/${var.proxy_function_version}/function_gcp.zip"
+  }
 }
 
 resource "google_storage_bucket_object" "archive" {
@@ -38,7 +33,7 @@ resource "google_storage_bucket_object" "archive" {
   source = "${path.module}/function_gcp.zip"
 
   depends_on = [
-    data.archive_file.function
+    null_resource.gcp_function
   ]
 }
 
