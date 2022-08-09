@@ -39,7 +39,7 @@ variable "proxy_service_account" {
 }
 
 variable "data_source_url" {
-  description = "URL to data source"
+  description = "URL to data source. The endpoint path of the URL should be: '/api/v1/query_range'"
   type        = string
 }
 

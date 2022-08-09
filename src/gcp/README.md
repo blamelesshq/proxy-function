@@ -54,7 +54,7 @@ This will prepare the function and then ask for some information:
 | proxy_bucket_location       | Location to create and host proxy function bucket                                                              |
 | proxy_function_name         | Globally unique user-defined name of the function                                                              |
 | proxy_service_account       | Service account name for proxy service                                                                         |
-| data_source_url             | URL to data source                                                                                             |
+| data_source_url             | URL to data source. The endpoint path of the URL should be: '/api/v1/query_range'                              |
 | data_source_username        | Username for data source                                                                                       | 
 | data_source_password        | Password for data source                                                                                       |
 | data_source_type            | Data source type. ('prometheus', 'splunk')                                                                     |
